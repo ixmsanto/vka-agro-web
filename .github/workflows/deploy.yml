@@ -22,16 +22,6 @@ jobs:
     - name: Install Composer Dependencies
       run: composer install --optimize-autoloader --no-dev
 
-    - name: Setup Node.js (For Blade Vite Assets)
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-
-    - name: Install NPM & Compile Styles
-      run: |
-        npm ci
-        npm run build
-
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
