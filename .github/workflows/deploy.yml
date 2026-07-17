@@ -1,108 +1,41 @@
-name: Deploy to GoViralHost
-
-# Builds the app with Composer (no Node — the frontend is plain Blade/CSS/JS)
-# and pushes it over FTP into two sibling folders on the host:
-#
-#   ~/vka-app       the Laravel application (outside the web root)
-#   ~/public_html   the document root: assets + a front controller that
-#                   boots the app from ../vka-app
-#
-# After the files land, it calls the /__deploy hook so migrations and cache
-# warming run on the server (shared hosting has no shell for `php artisan`).
+name: Deploy vkaagroproducts.com
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
-
-concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, pdo_sqlite, sqlite3, gd, fileinfo, intl
-          coverage: none
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        extensions: pdo_sqlite, fileinfo, mbstring
 
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+    - name: Install Composer Dependencies
+      run: composer install --optimize-autoloader --no-dev
 
-      - name: Assemble deploy trees
-        run: |
-          set -e
+    - name: Setup Node.js (For Blade Vite Assets)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
 
-          # ---- application tree (goes outside the web root) ----
-          mkdir -p build/app
-          rsync -a ./ build/app/ \
-            --exclude '.git' \
-            --exclude '.github' \
-            --exclude 'build' \
-            --exclude 'hosting' \
-            --exclude 'public' \
-            --exclude 'tests' \
-            --exclude 'node_modules' \
-            --exclude '.env' \
-            --exclude '.env.*' \
-            --exclude 'database/*.sqlite' \
-            --exclude 'database/*.sqlite-journal' \
-            --exclude 'phpunit.xml' \
-            --exclude '.editorconfig' \
-            --exclude 'README.md'
+    - name: Install NPM & Compile Styles
+      run: |
+        npm ci
+        npm run build
 
-          # ---- document root (assets + patched front controller) ----
-          mkdir -p build/public_html
-          rsync -a public/ build/public_html/ --exclude 'uploads/*'
-          # keep the uploads directory present but empty in the deploy tree
-          mkdir -p build/public_html/uploads
-          # replace the dev front controller + drop the hardened .htaccess
-          cp hosting/public_html/index.php build/public_html/index.php
-          cp hosting/public_html/.htaccess build/public_html/.htaccess
-
-      - name: Deploy application (~/vka-app)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
-          port: ${{ vars.FTP_PORT || 21 }}
-          local-dir: ./build/app/
-          server-dir: ${{ vars.APP_DIR || 'vka-app/' }}
-          # Never touch server-side runtime state.
-          exclude: |
-            **/.env
-            **/storage/logs/**
-            **/database/*.sqlite
-            **/database/*.sqlite-journal
-
-      - name: Deploy document root (~/public_html)
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
-          port: ${{ vars.FTP_PORT || 21 }}
-          local-dir: ./build/public_html/
-          server-dir: ${{ vars.PUBLIC_DIR || 'public_html/' }}
-          # Uploaded media is created on the server; leave it alone.
-          exclude: |
-            **/uploads/**
-
-      - name: Run migrations & warm caches
-        if: ${{ vars.APP_URL != '' }}
-        run: |
-          curl --fail --show-error --silent --location \
-            -X POST "${{ vars.APP_URL }}/__deploy" \
-            -H "X-Deploy-Token: ${{ secrets.DEPLOY_TOKEN }}" \
-            -H "Accept: application/json" \
-            || { echo "Deploy hook failed — check DEPLOY_TOKEN and APP_URL."; exit 1; }
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /public_html/vkaagroproducts.com/
