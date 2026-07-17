@@ -1,0 +1,15 @@
+@extends('layouts.site')
+
+@section('body')
+    @include('site.partials.nav')
+    @include('site.partials.hero')
+    @include('site.partials.video')
+    @include('site.partials.about')
+    @include('site.partials.products')
+    @include('site.partials.gallery')
+    @include('site.partials.why')
+    @include('site.partials.testimonials')
+    @include('site.partials.blog')
+    @include('site.partials.contact')
+    @include('site.partials.footer')
+@endsection

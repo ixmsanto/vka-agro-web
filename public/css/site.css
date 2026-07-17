@@ -1,0 +1,126 @@
+/* VKA Agro — public site.
+   Ported from the design's <helmet> block. Layout stays inline on the elements
+   (as designed); this file owns what inline styles cannot express: keyframes,
+   media queries and the empty-image-slot treatment. */
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: #21503C;
+  font-family: 'Manrope', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(99,190,70,0.32), transparent 60%),
+    radial-gradient(900px 650px at 98% 8%, rgba(33,80,60,0.22), transparent 55%),
+    radial-gradient(1000px 800px at 60% 108%, rgba(99,190,70,0.20), transparent 60%),
+    linear-gradient(180deg, #F3FAF0 0%, #EAF6E6 100%);
+  background-attachment: fixed;
+}
+
+a { color: #21503C; text-decoration: none; }
+a:hover { color: #63BE46; }
+::selection { background: rgba(99,190,70,0.28); }
+input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
+
+@keyframes vkaFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-16px) } }
+@keyframes vkaFloatSlow { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+@keyframes vkaPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(99,190,70,0.35) } 50% { box-shadow: 0 0 0 7px rgba(99,190,70,0) } }
+@keyframes vkaScroll { 0% { opacity: 0; transform: translateY(0) } 35% { opacity: 1 } 70% { opacity: 1; transform: translateY(11px) } 100% { opacity: 0; transform: translateY(11px) } }
+@keyframes vkaWaRing { 0% { transform: scale(1); opacity: 0.7 } 70% { transform: scale(1.7); opacity: 0 } 100% { transform: scale(1.7); opacity: 0 } }
+@keyframes vkaSpin { to { transform: rotate(360deg) } }
+
+.vka-float { animation: vkaFloat 7s ease-in-out infinite; }
+.vka-float-slow { animation: vkaFloatSlow 9s ease-in-out infinite; }
+.vka-pulse-dot { animation: vkaPulse 2.6s ease-in-out infinite; }
+.vka-wa-ring { animation: vkaWaRing 2.4s cubic-bezier(.2,.6,.4,1) infinite; }
+.vka-spin { animation: vkaSpin 22s linear infinite; transform-box: view-box; transform-origin: 56px 56px; }
+
+/* ---- Hover states the design expressed with style-hover="" ---- */
+.vka-link-muted:hover { color: #63BE46; }
+.vka-nav-link:hover { color: #123C2D; border-bottom-color: rgba(99,190,70,0.5); }
+
+.vka-btn-primary { transition: background .3s ease, transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease; }
+.vka-btn-primary:hover { background: #24702F; color: #FFFFFF; transform: translateY(-3px); box-shadow: 0 22px 46px rgba(47,139,60,0.44); }
+
+.vka-btn-ghost { transition: border-color .3s ease, background .3s ease, transform .35s cubic-bezier(.16,1,.3,1), color .3s ease; }
+.vka-btn-ghost:hover { border-color: #2F8B3C; background: #2F8B3C; color: #FFFFFF; transform: translateY(-3px); }
+
+.vka-social:hover { background: #63BE46; color: #FFFFFF; transform: translateY(-3px); }
+.vka-social-wa:hover { background: #25D366; color: #FFFFFF; transform: translateY(-3px); }
+
+.vka-blog-card { transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s ease; }
+.vka-blog-card:hover { transform: translateY(-6px); box-shadow: 0 34px 70px rgba(33,80,60,0.16); color: #21503C; }
+
+.vka-field { transition: border-color .3s ease, background .3s ease; }
+.vka-field:focus { border-color: #63BE46; background: rgba(255,255,255,0.85); }
+
+.vka-btn-send:hover { background: #54A93A; transform: translateY(-2px); }
+
+.vka-top-btn:hover { background: #2F8B3C; color: #FFFFFF; transform: translateY(-3px) scale(1.06); }
+.vka-wa-btn { transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease; }
+.vka-wa-btn:hover { color: #FFFFFF; transform: scale(1.09); box-shadow: 0 20px 44px rgba(37,211,102,0.55); }
+
+.vka-play:hover { transform: translate(-50%,-50%) scale(1.08); background: #FFFFFF; }
+
+/* ---- Responsive visibility. The design drove these from JS state:
+   isMobile = width < 1080, isWide = width >= 1240. ---- */
+.vka-desktop { display: flex; }
+.vka-desktop-block { display: block; }
+.vka-mobile { display: none; }
+.vka-wide { display: flex; }
+
+@media (max-width: 1239px) {
+  .vka-wide { display: none; }
+}
+
+@media (max-width: 1079px) {
+  .vka-desktop, .vka-desktop-block { display: none; }
+  .vka-mobile { display: inline-flex; }
+}
+
+/* ---- Mobile drawer ---- */
+#vka-drawer { display: none; }
+#vka-drawer.is-open { display: flex; }
+
+/* ---- Empty image slots. The design used a drag-and-drop <image-slot>;
+   here an unset slot renders this placeholder until an admin uploads. ---- */
+.vka-slot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  box-sizing: border-box;
+  text-align: center;
+  color: rgba(33,80,60,0.45);
+  background:
+    repeating-linear-gradient(45deg, rgba(99,190,70,0.05) 0 12px, transparent 12px 24px),
+    rgba(99,190,70,0.08);
+}
+
+.vka-slot--static { position: relative; }
+.vka-slot svg { opacity: 0.5; flex: 0 0 auto; }
+.vka-slot span { font-size: 12.5px; font-weight: 600; line-height: 1.45; max-width: 30ch; }
+
+.vka-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.vka-img--static { position: relative; }
+.vka-img--cover { object-fit: cover; }
+.vka-img--contain { object-fit: contain; }
+
+/* ---- Reveal-on-scroll. Elements start hidden only when JS is present, so a
+   no-JS visitor still sees the whole page. ---- */
+.js [data-reveal] { opacity: 0; transform: translateY(26px); }

@@ -1,0 +1,191 @@
+/* VKA Agro — admin. Ported from Admin.dc.html / Login.dc.html. */
+
+body {
+  margin: 0;
+  font-family: 'Manrope', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #21503C;
+  background: #EEF4EA;
+}
+
+a { color: #2F8B3C; text-decoration: none; }
+a:hover { color: #24702F; }
+input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.4); }
+input, textarea, select, button { font-family: inherit; }
+
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(33,80,60,0.2); border-radius: 8px; }
+
+@keyframes vkaToast { 0% { opacity: 0; transform: translateY(10px) } 12% { opacity: 1; transform: none } 88% { opacity: 1; transform: none } 100% { opacity: 0; transform: translateY(10px) } }
+@keyframes vkaSpin { to { transform: rotate(360deg) } }
+
+/* ---- login ---- */
+.vka-login {
+  min-height: 100vh;
+  background:
+    radial-gradient(1100px 700px at 12% -8%, rgba(99,190,70,0.30), transparent 60%),
+    radial-gradient(900px 650px at 98% 8%, rgba(33,80,60,0.22), transparent 55%),
+    radial-gradient(1000px 800px at 60% 108%, rgba(99,190,70,0.20), transparent 60%),
+    linear-gradient(180deg, #F3FAF0 0%, #EAF6E6 100%);
+}
+
+.vka-login-grid { grid-template-columns: 1fr 1fr; }
+.vka-login-brand { display: flex; }
+
+@media (max-width: 719px) {
+  .vka-login-grid { grid-template-columns: 1fr; }
+  .vka-login-brand { display: none; }
+}
+
+/* ---- form controls ---- */
+.a-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid rgba(33,80,60,0.16);
+  border-radius: 10px;
+  background: #fff;
+  font-size: 14px;
+  color: #21503C;
+  outline: none;
+  transition: border-color .2s ease;
+}
+
+.a-input:focus { border-color: #63BE46; }
+.a-input--accent { border-color: rgba(99,190,70,0.4); background: #F5FBF2; color: #2F8B3C; font-weight: 600; }
+.a-input--sm { padding: 10px 12px; border-radius: 9px; }
+textarea.a-input { resize: vertical; line-height: 1.6; }
+
+.a-label { display: flex; flex-direction: column; gap: 7px; }
+.a-label > span { font-size: 12px; font-weight: 600; color: #6A756E; }
+
+.a-card {
+  background: #fff;
+  border: 1px solid #EEF3EC;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(33,80,60,0.06);
+}
+
+.a-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #2F8B3C;
+  color: #fff;
+  border: none;
+  padding: 13px 24px;
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(47,139,60,0.26);
+}
+
+.a-btn:hover { background: #24702F; color: #fff; }
+
+.a-icon-btn {
+  flex: 1;
+  padding: 7px;
+  border: 1px solid #E1EFDD;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #5E6862;
+  font-size: 13px;
+}
+
+.a-icon-btn:hover { background: #EDF8EC; color: #2F8B3C; }
+.a-icon-btn--danger { border-color: #E4B4AC; color: #B23B2A; }
+.a-icon-btn--danger:hover { background: #FCEDEA; color: #B23B2A; }
+
+.a-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.72);
+  padding: 11px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+
+.a-nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.a-nav-btn.is-active { background: rgba(99,190,70,0.18); color: #fff; }
+
+/* ---- save toast ---- */
+#a-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  background: rgba(99,190,70,0.16);
+  color: #2F8B3C;
+  border: 1px solid rgba(47,139,60,0.3);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+
+#a-toast.is-visible { display: inline-flex; animation: vkaToast 1.8s ease forwards; }
+#a-toast.is-error { background: rgba(214,80,60,0.12); color: #B23B2A; border-color: rgba(214,80,60,0.35); }
+
+/* ---- image slot with a drop target ---- */
+.a-slot {
+  position: relative;
+  display: block;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(99,190,70,0.1);
+  cursor: pointer;
+}
+
+.a-slot img, .a-slot video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.a-slot__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  padding: 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(33,80,60,0.45);
+}
+
+.a-slot.is-dragging { outline: 2px dashed #2F8B3C; outline-offset: -4px; }
+
+.a-slot__clear {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.92);
+  color: #B23B2A;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+@media (max-width: 860px) {
+  .a-sidebar-label { display: none; }
+}
