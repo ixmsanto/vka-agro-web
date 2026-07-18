@@ -32,7 +32,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         port: ${{ vars.FTP_PORT || 21 }}
         local-dir: ./
-        server-dir: ${{ vars.APP_DIR || 'vka-app/' }}
+        server-dir: ${{ vars.APP_DIR || './' }}
         exclude: |
           **/.git*
           **/.git*/**
