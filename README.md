@@ -179,6 +179,73 @@ cPanel Terminal / cron: `php /home/YOUR_USER/vka-app/artisan migrate --force`.
 
 ---
 
+## Maintenance routes (`/admin/artisan/*`)
+
+On shared hosting where you can't SSH in and run `php artisan …` directly, every
+useful command is exposed as a plain **GET route** under `/admin/artisan/`.  
+All routes are protected by the `auth` middleware — **you must be signed in to the
+admin panel first**.
+
+Each route returns a JSON response:
+
+```json
+{ "status": "ok", "message": "<artisan output>" }
+```
+
+### Cache
+
+| Route | Equivalent command |
+| ----- | ------------------ |
+| `/admin/artisan/cache-clear` | `php artisan cache:clear` |
+| `/admin/artisan/config-clear` | `php artisan config:clear` |
+| `/admin/artisan/route-clear` | `php artisan route:clear` |
+| `/admin/artisan/view-clear` | `php artisan view:clear` |
+| `/admin/artisan/clear-all` | all four clears above + `event:clear` |
+| `/admin/artisan/config-cache` | `php artisan config:cache` |
+| `/admin/artisan/route-cache` | `php artisan route:cache` |
+| `/admin/artisan/view-cache` | `php artisan view:cache` |
+| `/admin/artisan/cache-all` | config + route + view cache (warm all) |
+
+### Storage
+
+| Route | Equivalent command |
+| ----- | ------------------ |
+| `/admin/artisan/storage-link` | `php artisan storage:link` |
+
+> Run this once after the first deploy if any feature starts using
+> `storage/app/public`. If the symlink already exists Laravel reports it
+> gracefully without erroring.
+
+### Optimize
+
+| Route | Equivalent command |
+| ----- | ------------------ |
+| `/admin/artisan/optimize` | `php artisan optimize` |
+| `/admin/artisan/optimize-clear` | `php artisan optimize:clear` |
+
+### Database
+
+| Route | Equivalent command |
+| ----- | ------------------ |
+| `/admin/artisan/migrate` | `php artisan migrate --force` |
+| `/admin/artisan/migrate-status` | `php artisan migrate:status` |
+
+### Queue & App key
+
+| Route | Equivalent command |
+| ----- | ------------------ |
+| `/admin/artisan/queue-restart` | `php artisan queue:restart` |
+| `/admin/artisan/key-generate` | `php artisan key:generate --force` |
+
+> **Typical post-deploy checklist on shared hosting**
+> 1. Upload files via FTP / deploy workflow.
+> 2. Visit `/admin/artisan/storage-link` (first deploy only).
+> 3. Visit `/admin/artisan/migrate` to apply any new migrations.
+> 4. Visit `/admin/artisan/clear-all` to flush stale caches.
+> 5. Optionally `/admin/artisan/optimize` to warm caches for production.
+
+---
+
 ## Project layout
 
 ```
