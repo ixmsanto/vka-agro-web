@@ -121,7 +121,68 @@ Do this once, using cPanel File Manager or an FTP client:
 The empty `database.sqlite` file and `storage/` folders are created by the
 first deploy; you don't need to make them by hand.
 
-### 2. GitHub repository configuration
+### 2. Generate and wire the DEPLOY_TOKEN
+
+The `DEPLOY_TOKEN` is a long random string that acts as a shared secret between
+GitHub Actions and your server's `/__deploy` endpoint. The workflow `POST`s to
+that endpoint after every FTP upload so the server can run migrations and warm
+the config/route/view caches automatically.
+
+#### 2a. Generate the token locally
+
+Run **any one** of these commands — they all produce a secure random string:
+
+```bash
+# Option A — OpenSSL (available on macOS, Linux, and Git Bash on Windows)
+openssl rand -hex 40
+
+# Option B — PHP (already installed for this project)
+php -r "echo bin2hex(random_bytes(40)) . PHP_EOL;"
+
+# Option C — Python (macOS built-in)
+python3 -c "import secrets; print(secrets.token_hex(40))"
+```
+
+Copy the output — it will look like:
+```
+a3f9c21b8e47d056f3a190bc...
+```
+
+#### 2b. Paste it into your server `.env`
+
+Open `~/vka-app/.env` on the server (cPanel File Manager → Edit) and set:
+
+```dotenv
+DEPLOY_TOKEN=paste-your-generated-string-here
+```
+
+#### 2c. Add it to GitHub Secrets
+
+1. Go to your GitHub repository → **Settings → Secrets and variables → Actions**
+2. Click **New repository secret**
+3. Name: `DEPLOY_TOKEN`
+4. Value: paste the **exact same string** you put in `.env`
+5. Click **Add secret**
+
+> [!IMPORTANT]
+> The token in GitHub Secrets **must exactly match** the one in the server `.env`.
+> A mismatch causes the `/__deploy` endpoint to return `403 Forbidden`, and the
+> workflow step will fail.
+
+#### 2d. Verify it works
+
+After your next push to `main`, check the **Run post-deploy hook** step in
+GitHub Actions — it should log:
+```
+✅ Post-deploy hook succeeded (HTTP 200)
+```
+
+If you see `403`, the token is mismatched. If you see `404`, `DEPLOY_TOKEN` in
+`.env` on the server is blank (the endpoint is disabled when the value is empty).
+
+---
+
+### 3. GitHub repository configuration
 
 Add these under **Settings → Secrets and variables → Actions**.
 
@@ -148,7 +209,7 @@ Add these under **Settings → Secrets and variables → Actions**.
 > correct. If it logs into `public_html`, set `APP_DIR` to `../vka-app/` and
 > `PUBLIC_DIR` to `./`.
 
-### 3. Deploy
+### 4. Deploy
 
 Push to `main` (or run the **Deploy to GoViralHost** workflow manually). The
 workflow, defined in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml):
