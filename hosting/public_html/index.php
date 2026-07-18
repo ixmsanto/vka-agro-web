@@ -3,12 +3,12 @@
 /**
  * Shared-hosting front controller for VKA Agro.
  *
- * The Laravel application lives OUTSIDE the web root (in ../vka-app), so that
- * only this file and the compiled assets under public_html are web-reachable.
+ * The Laravel application lives in ./laravel/ (a subfolder of public_html).
+ * The laravel/ directory is protected from direct browser access via .htaccess.
  * This is a drop-in replacement for the stock public/index.php with the paths
- * repointed one directory up-and-over.
+ * repointed to the sibling laravel/ folder.
  *
- * If your app folder is named something other than "vka-app", change
+ * If your app folder is named something other than "laravel", change
  * $app_base below to match.
  */
 
@@ -17,8 +17,8 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// public_html and vka-app are siblings in the account home directory.
-$app_base = __DIR__.'/../vka-app';
+// The Laravel app lives inside public_html/laravel/ (protected by .htaccess).
+$app_base = __DIR__.'/laravel';
 
 // Maintenance mode...
 if (file_exists($maintenance = $app_base.'/storage/framework/maintenance.php')) {

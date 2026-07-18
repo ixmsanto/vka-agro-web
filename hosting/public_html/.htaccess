@@ -26,6 +26,12 @@
     Require all denied
 </FilesMatch>
 
+# Block direct browser access to the laravel/ app folder.
+# Only index.php should bootstrap it — never expose internals.
+<IfModule mod_rewrite.c>
+    RewriteRule ^laravel(/.*)?$ - [F,L]
+</IfModule>
+
 # Long-cache the fingerprinted assets (?v=mtime busts them on deploy).
 <IfModule mod_headers.c>
     <FilesMatch "\.(css|js|webp|jpg|jpeg|png|gif|svg|woff2?)$">
