@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SpecController;
 use App\Http\Controllers\DeployController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InquiryController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /* -------------------------------- public -------------------------------- */
@@ -70,6 +71,106 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('{resource}/{id}/move', [CollectionController::class, 'move'])->name('collection.move');
             Route::post('{resource}/{id}/image', [CollectionController::class, 'image'])->name('collection.image');
             Route::delete('{resource}/{id}/image', [CollectionController::class, 'clearImage'])->name('collection.image.destroy');
+        });
+
+        /* -------------------- artisan / maintenance -------------------- */
+        Route::prefix('artisan')->name('artisan.')->group(function () {
+
+            // ------ Cache ------
+            Route::get('cache-clear', function () {
+                Artisan::call('cache:clear');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('cache.clear');
+
+            Route::get('cache-all', function () {
+                Artisan::call('config:cache');
+                Artisan::call('route:cache');
+                Artisan::call('view:cache');
+                return response()->json(['status' => 'ok', 'message' => 'config + route + view cached.']);
+            })->name('cache.all');
+
+            Route::get('clear-all', function () {
+                Artisan::call('cache:clear');
+                Artisan::call('config:clear');
+                Artisan::call('route:clear');
+                Artisan::call('view:clear');
+                Artisan::call('event:clear');
+                return response()->json(['status' => 'ok', 'message' => 'All caches cleared.']);
+            })->name('clear.all');
+
+            // ------ Config ------
+            Route::get('config-cache', function () {
+                Artisan::call('config:cache');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('config.cache');
+
+            Route::get('config-clear', function () {
+                Artisan::call('config:clear');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('config.clear');
+
+            // ------ Routes ------
+            Route::get('route-cache', function () {
+                Artisan::call('route:cache');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('route.cache');
+
+            Route::get('route-clear', function () {
+                Artisan::call('route:clear');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('route.clear');
+
+            // ------ Views ------
+            Route::get('view-cache', function () {
+                Artisan::call('view:cache');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('view.cache');
+
+            Route::get('view-clear', function () {
+                Artisan::call('view:clear');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('view.clear');
+
+            // ------ Storage ------
+            Route::get('storage-link', function () {
+                Artisan::call('storage:link');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('storage.link');
+
+            // ------ Optimize ------
+            Route::get('optimize', function () {
+                Artisan::call('optimize');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('optimize');
+
+            Route::get('optimize-clear', function () {
+                Artisan::call('optimize:clear');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('optimize.clear');
+
+            // ------ Migrations ------
+            Route::get('migrate', function () {
+                Artisan::call('migrate', ['--force' => true]);
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('migrate');
+
+            Route::get('migrate-status', function () {
+                Artisan::call('migrate:status');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('migrate.status');
+
+            // ------ Queue ------
+            Route::get('queue-restart', function () {
+                Artisan::call('queue:restart');
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('queue.restart');
+
+            // ------ Symlink / App key ------
+            Route::get('key-generate', function () {
+                Artisan::call('key:generate', ['--force' => true]);
+                return response()->json(['status' => 'ok', 'message' => Artisan::output()]);
+            })->name('key.generate');
+
         });
     });
 });
