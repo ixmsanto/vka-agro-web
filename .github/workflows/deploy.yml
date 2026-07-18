@@ -50,7 +50,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         port: ${{ vars.FTP_PORT || 21 }}
         local-dir: ./hosting/public_html/
-        server-dir: ${{ vars.PUBLIC_DIR || 'public_html/' }}
+        server-dir: ${{ vars.PUBLIC_DIR || './' }}
 
     - name: Run post-deploy hook (migrate + cache warm)
       if: ${{ vars.APP_URL != '' }}
