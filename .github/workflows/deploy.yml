@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   deploy:
@@ -23,51 +22,10 @@ jobs:
     - name: Install Composer Dependencies
       run: composer install --optimize-autoloader --no-dev
 
-    - name: Deploy App via FTP
+    - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
-        protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        port: ${{ vars.FTP_PORT || 21 }}
-        local-dir: ./
-        server-dir: ${{ vars.APP_DIR || './vka-app/' }}
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          public/uploads/**
-          database/database.sqlite
-          .env
-
-    - name: Deploy Public Assets via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        port: ${{ vars.FTP_PORT || 21 }}
-        local-dir: ./hosting/public_html/
-        server-dir: ${{ vars.PUBLIC_DIR || './' }}
-
-    - name: Run post-deploy hook (migrate + cache warm)
-      if: ${{ vars.APP_URL != '' }}
-      run: |
-        echo "Calling post-deploy hook at ${{ vars.APP_URL }}/__deploy"
-        HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
-          --max-time 60 \
-          --retry 3 \
-          --retry-delay 5 \
-          -X POST \
-          -H "Authorization: Bearer ${{ secrets.DEPLOY_TOKEN }}" \
-          "${{ vars.APP_URL }}/__deploy")
-        echo "Response status: $HTTP_STATUS"
-        if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
-          echo "✅ Post-deploy hook succeeded (HTTP $HTTP_STATUS)"
-        else
-          echo "⚠️  Post-deploy hook returned HTTP $HTTP_STATUS — check server logs."
-          echo "    You can run migrations manually via /admin/artisan/migrate"
-          exit 1
-        fi
+        server-dir: ./
