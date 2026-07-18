@@ -26,10 +26,10 @@
     Require all denied
 </FilesMatch>
 
-# Block direct browser access to the laravel/ app folder.
+# Block direct browser access to the vka-app/ folder.
 # Only index.php should bootstrap it — never expose internals.
 <IfModule mod_rewrite.c>
-    RewriteRule ^laravel(/.*)?$ - [F,L]
+    RewriteRule ^vka-app(/.*)?$ - [F,L]
 </IfModule>
 
 # Long-cache the fingerprinted assets (?v=mtime busts them on deploy).
