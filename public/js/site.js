@@ -251,8 +251,12 @@
     var video = document.getElementById('video');
 
     // Alternating product rows: image left/right on desktop, stacked on mobile.
+    // Stacked rows must stretch: the inline align-items:center would otherwise
+    // size the columns to max-content and let the 56ch copy overflow the page.
     document.querySelectorAll('[data-prow]').forEach(function (row, i) {
-      row.style.flexDirection = w < 860 ? 'column' : (i % 2 === 1 ? 'row-reverse' : 'row');
+      var stacked = w < 860;
+      row.style.flexDirection = stacked ? 'column' : (i % 2 === 1 ? 'row-reverse' : 'row');
+      row.style.alignItems = stacked ? 'stretch' : 'center';
     });
 
     // Bento gallery: 4-col -> 2-col -> 1-col, spans clamped per breakpoint.

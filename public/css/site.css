@@ -5,6 +5,11 @@
 
 html { scroll-behavior: smooth; }
 
+/* Clip on the root as well as the body: the body-only rule relies on overflow
+   propagating to the viewport, which mobile browsers apply inconsistently, and
+   it never covers fixed-position decoration such as the WhatsApp pulse ring. */
+html, body { overflow-x: hidden; }
+
 body {
   margin: 0;
   color: #21503C;
