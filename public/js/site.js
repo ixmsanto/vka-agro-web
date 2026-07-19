@@ -10,8 +10,11 @@
   document.documentElement.classList.add('js');
 
   var MOBILE = 1080;
-  var EASE = 'cubic-bezier(.16,1,.3,1)';
-  var STAGGER = 90;
+  // cubic-bezier(.16,1,.3,1) has a very long, slow tail — most of the second is
+  // spent creeping the last few pixels, which reads as sluggish rather than
+  // smooth. This is a plain ease-out: it arrives and stops.
+  var EASE = 'cubic-bezier(.22,.61,.36,1)';
+  var STAGGER = 55;
 
   // Every motion module checks this. The CSS has its own reduced-motion block
   // for the poses elements are parked in; this is for the behaviour that only
@@ -108,7 +111,7 @@
       // this runs the inline transition set below outranks every hover
       // transition the element has, so a card would ease its hover over .9s
       // instead of the .4s its own rule asks for.
-      setTimeout(function () { el.style.transition = ''; }, delay + 1600);
+      setTimeout(function () { el.style.transition = ''; }, delay + 1100);
     }
 
     addReveal = function (el) {
@@ -118,9 +121,9 @@
 
       var delay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) * STAGGER;
       el.style.transition =
-        'opacity .9s ' + EASE + ' ' + delay + 'ms' +
-        ', transform .9s ' + EASE + ' ' + delay + 'ms' +
-        ', filter .9s ' + EASE + ' ' + delay + 'ms';
+        'opacity .6s ' + EASE + ' ' + delay + 'ms' +
+        ', transform .6s ' + EASE + ' ' + delay + 'ms' +
+        ', filter .6s ' + EASE + ' ' + delay + 'ms';
 
       if (!io) { show(el); return; }
 
@@ -217,7 +220,7 @@
       var base = (parseInt(head.getAttribute('data-split'), 10) || 0) * STAGGER;
 
       splitWords(head).forEach(function (word, i) {
-        word.style.transitionDelay = (base + i * 55) + 'ms';
+        word.style.transitionDelay = (base + i * 32) + 'ms';
       });
 
       head.classList.add('is-split');
@@ -250,7 +253,7 @@
 
       whenSeen(el, function () {
         var start = null;
-        var duration = 1600;
+        var duration = 1300;
 
         function frame(now) {
           if (start === null) start = now;
@@ -280,15 +283,39 @@
     document.querySelectorAll('.vka-btn-primary, .vka-btn-ghost, .vka-btn-send').forEach(function (el) {
       el.classList.add('vka-mag');
 
-      el.addEventListener('mousemove', function (e) {
-        if (window.innerWidth < MOBILE) return;
+      var box = null;
+      var mx = 0, my = 0;
+      var queued = false;
 
-        var r = el.getBoundingClientRect();
-        el.style.setProperty('--mx', ((e.clientX - (r.left + r.width / 2)) * 0.22).toFixed(1) + 'px');
-        el.style.setProperty('--my', ((e.clientY - (r.top + r.height / 2)) * 0.3).toFixed(1) + 'px');
+      function write() {
+        queued = false;
+        el.style.setProperty('--mx', mx.toFixed(1) + 'px');
+        el.style.setProperty('--my', my.toFixed(1) + 'px');
+      }
+
+      el.addEventListener('mouseenter', function () {
+        // Measured once on entry rather than per event: the button cannot move
+        // while the pointer is inside it, and getBoundingClientRect() forces a
+        // layout every time it is called.
+        box = el.getBoundingClientRect();
       });
 
+      el.addEventListener('mousemove', function (e) {
+        if (window.innerWidth < MOBILE || !box) return;
+
+        mx = (e.clientX - (box.left + box.width / 2)) * 0.22;
+        my = (e.clientY - (box.top + box.height / 2)) * 0.3;
+
+        // A mouse can fire far more often than the screen refreshes; without
+        // this the style write (and the paint behind it) runs several times per
+        // frame for nothing.
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(write);
+      }, { passive: true });
+
       el.addEventListener('mouseleave', function () {
+        box = null;
         el.style.setProperty('--mx', '0px');
         el.style.setProperty('--my', '0px');
       });
@@ -302,28 +329,43 @@
 
     document.querySelectorAll('[data-tilt]').forEach(function (el) {
       el.classList.add('vka-tilt');
+
       var max = parseFloat(el.getAttribute('data-tilt')) || 6;
+      var box = null;
+      var px = 0.5, py = 0.5;
+      var queued = false;
 
-      el.addEventListener('mousemove', function (e) {
-        if (window.innerWidth < MOBILE) return;
-
-        var r = el.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width;
-        var py = (e.clientY - r.top) / r.height;
-
-        el.classList.add('is-tilting');
+      function write() {
+        queued = false;
         el.style.setProperty('--px', (px * 100).toFixed(1) + '%');
         el.style.setProperty('--py', (py * 100).toFixed(1) + '%');
         el.style.transform =
           'perspective(1000px) rotateX(' + ((0.5 - py) * max).toFixed(2) + 'deg)' +
           ' rotateY(' + ((px - 0.5) * max).toFixed(2) + 'deg) translateY(-6px)';
+      }
+
+      el.addEventListener('mouseenter', function () {
+        box = el.getBoundingClientRect();
+        el.classList.add('is-tilting');
       });
 
+      el.addEventListener('mousemove', function (e) {
+        if (window.innerWidth < MOBILE || !box) return;
+
+        px = (e.clientX - box.left) / box.width;
+        py = (e.clientY - box.top) / box.height;
+
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(write);
+      }, { passive: true });
+
       el.addEventListener('mouseleave', function () {
+        box = null;
         el.classList.remove('is-tilting');
         // 'none', not '': these cards also carry data-reveal, and clearing the
         // property outright would hand them back to the rule that parks an
-        // unrevealed element 26px down the page.
+        // unrevealed element down the page.
         el.style.transform = 'none';
       });
     });
@@ -333,6 +375,10 @@
      One bar slides between the links rather than each link owning its own
      underline, so moving between sections reads as a single continuous
      movement. */
+
+  // Assigned by initNavSpy so the one shared scroll handler can drive it.
+  var spy = function () {};
+  var navSpyMeasure = function () {};
 
   function initNavSpy() {
     var wrap = document.getElementById('vka-navlinks');
@@ -351,13 +397,31 @@
 
     var active = -1;
 
+    // Geometry is cached rather than read per scroll event. Reading offsetTop
+    // forces the browser to flush layout, and doing that once per section on
+    // every scroll tick was the single most expensive thing on this page.
+    var tops = [];
+    var linkBoxes = [];
+
+    function measure() {
+      sections.forEach(function (section, i) {
+        tops[i] = section ? section.getBoundingClientRect().top + window.scrollY : Infinity;
+      });
+
+      links.forEach(function (a, i) {
+        linkBoxes[i] = { left: a.offsetLeft, width: a.offsetWidth };
+      });
+
+      place();
+    }
+
     function place() {
-      var a = links[active];
-      if (!a) { indicator.style.opacity = '0'; return; }
+      var box = linkBoxes[active];
+      if (!box) { indicator.style.opacity = '0'; return; }
 
       indicator.style.opacity = '1';
-      indicator.style.width = a.offsetWidth + 'px';
-      indicator.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+      indicator.style.width = box.width + 'px';
+      indicator.style.transform = 'translateX(' + box.left + 'px)';
     }
 
     function select(i) {
@@ -375,22 +439,50 @@
     // The section counts as current once its top has passed a line a third of
     // the way down the viewport — near enough to the reading position that the
     // indicator changes when the heading does.
-    function spy() {
+    spy = function () {
       var line = window.scrollY + window.innerHeight * 0.32;
       var found = 0;
 
-      sections.forEach(function (section, i) {
-        if (section && section.offsetTop <= line) found = i;
-      });
+      for (var i = 0; i < tops.length; i++) {
+        if (tops[i] <= line) found = i;
+      }
 
       select(found);
-    }
+    };
 
+    measure();
     spy();
-    window.addEventListener('scroll', spy, { passive: true });
-    // The links reflow with the viewport, so the bar has to be re-measured.
-    window.addEventListener('resize', place);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+
+    // Anything that can move a section re-measures; scrolling never does.
+    window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    navSpyMeasure = measure;
+  }
+
+  /* ---------------- idle the off-screen animations ----------------
+     The ornamental marks, the pulse dots and the floating pieces all loop
+     forever. The browser keeps every one of them ticking whether or not it is
+     on screen, and most of them are not for most of the visit. */
+
+  function initIdleAnimations() {
+    if (REDUCED || !('IntersectionObserver' in window)) return;
+
+    var nodes = document.querySelectorAll('.vka-deco, .vka-pulse-dot, .vka-float, .vka-float-slow');
+    if (!nodes.length) return;
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        en.target.classList.toggle('is-idle', !en.isIntersecting);
+      });
+    }, { rootMargin: '150px 0px' });
+
+    // Parked up front, so nothing below the fold animates before it is reached;
+    // the observer's first callback releases whatever is already in view.
+    nodes.forEach(function (el) {
+      el.classList.add('is-idle');
+      io.observe(el);
+    });
   }
 
   /* ---------------- scroll progress ---------------- */
@@ -445,11 +537,22 @@
 
   /* ---------------- sticky nav + back-to-top ---------------- */
 
+  // Both of these run once a frame while scrolling, but the state they express
+  // only flips twice on the whole page. Writing the styles unconditionally
+  // meant re-declaring a backdrop-filter on every frame of every scroll — one
+  // of the more expensive properties to hand the compositor. The guards below
+  // reduce that to two writes per page load.
+  var navScrolled = null;
+  var topShown = null;
+
   function applyNav() {
     var nav = document.getElementById('vka-nav');
     if (!nav) return;
 
     var scrolled = window.scrollY > 40;
+    if (scrolled === navScrolled) return;
+    navScrolled = scrolled;
+
     nav.style.background = scrolled ? 'rgba(252,251,247,0.9)' : 'transparent';
     nav.style.borderBottomColor = scrolled ? '#EEF3EC' : 'transparent';
     nav.style.backdropFilter = scrolled ? 'blur(16px)' : 'blur(0px)';
@@ -468,6 +571,9 @@
     if (!btn) return;
 
     var show = window.scrollY > 520;
+    if (show === topShown) return;
+    topShown = show;
+
     btn.style.opacity = show ? '1' : '0';
     btn.style.transform = show ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.8)';
     btn.style.pointerEvents = show ? 'auto' : 'none';
@@ -482,6 +588,18 @@
 
     var raf = null, px = 0, py = 0;
 
+    // The transition and the depth are set once. Reassigning `transition` on
+    // every frame — as this did — restarts the same half-second ease each time,
+    // so the element is permanently easing towards a target that has already
+    // moved and never actually tracks the pointer. One declaration up front
+    // lets the transition do its job between frames instead.
+    var depths = [];
+    nodes.forEach(function (el, i) {
+      depths[i] = parseFloat(el.getAttribute('data-depth')) || 1;
+      el.style.transition = 'transform .45s cubic-bezier(.22,.61,.36,1)';
+      el.style.willChange = 'transform';
+    });
+
     window.addEventListener('mousemove', function (e) {
       if (window.innerWidth < MOBILE) return;
       px = (e.clientX / window.innerWidth) - 0.5;
@@ -490,10 +608,9 @@
 
       raf = requestAnimationFrame(function () {
         raf = null;
-        nodes.forEach(function (el) {
-          var d = parseFloat(el.getAttribute('data-depth')) || 1;
-          el.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
-          el.style.transform = 'translate(' + (px * -18 * d) + 'px,' + (py * -14 * d) + 'px)';
+        nodes.forEach(function (el, i) {
+          var d = depths[i];
+          el.style.transform = 'translate3d(' + (px * -18 * d).toFixed(2) + 'px,' + (py * -14 * d).toFixed(2) + 'px,0)';
         });
       });
     }, { passive: true });
@@ -742,6 +859,7 @@
     initDrawer();
     initMore();
     initNavSpy();
+    initIdleAnimations();
     applyNav();
     applyTopBtn();
     applyResponsive();
@@ -752,7 +870,25 @@
     var top = document.getElementById('vka-top');
     if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-    window.addEventListener('scroll', function () { applyNav(); applyTopBtn(); applyProgress(); }, { passive: true });
+    // One scroll listener, one style write per frame. Previously two separate
+    // listeners each ran on every scroll event — which fires far more often
+    // than the screen refreshes — and between them read layout and wrote styles
+    // several times per frame, forcing repeated layout flushes mid-scroll.
+    var scrollQueued = false;
+
+    function onScrollFrame() {
+      scrollQueued = false;
+      applyNav();
+      applyTopBtn();
+      applyProgress();
+      spy();
+    }
+
+    window.addEventListener('scroll', function () {
+      if (scrollQueued) return;
+      scrollQueued = true;
+      requestAnimationFrame(onScrollFrame);
+    }, { passive: true });
     window.addEventListener('resize', applyResponsive);
 
     // Re-measure once fonts and images have settled. The reveal sweep rides
