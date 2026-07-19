@@ -81,6 +81,9 @@
 
         batch.forEach(function (el) {
           el.removeAttribute('data-more-item');
+          // A gallery tile was parked while it had no height; now it can be
+          // measured, drop it into whichever column is currently shortest.
+          if (el.hasAttribute('data-gtile')) placeTile(el);
           // Only now can it be measured, so hand it to the reveal observer.
           // The gallery marks up the tile itself; the products their children.
           if (el.hasAttribute('data-reveal')) addReveal(el);
@@ -250,6 +253,61 @@
     });
   }
 
+  /* ---------------- masonry gallery ----------------
+     The columns are built here rather than with CSS multi-column, which
+     balances for the shortest total height and so leaves the last column
+     empty when there are only a few tall pictures. Filling the shortest
+     column each time uses every one of them, and lets "view more" append a
+     tile without disturbing anything already placed. */
+
+  function galleryCols() {
+    var w = window.innerWidth;
+    return w >= 1024 ? 4 : (w >= 620 ? 3 : 2);
+  }
+
+  function shortestCol(grid) {
+    var cols = grid.querySelectorAll('[data-gcol]');
+    var best = cols[0];
+
+    for (var i = 1; i < cols.length; i++) {
+      if (cols[i].offsetHeight < best.offsetHeight) best = cols[i];
+    }
+
+    return best;
+  }
+
+  // Exported for initMore: a tile revealed later joins the shortest column.
+  function placeTile(tile) {
+    var grid = document.querySelector('[data-gallery][data-built]');
+    if (grid) shortestCol(grid).appendChild(tile);
+  }
+
+  function buildGallery() {
+    var grid = document.querySelector('[data-gallery]');
+    if (!grid) return;
+
+    var want = galleryCols();
+    if (parseInt(grid.getAttribute('data-built'), 10) === want) return;
+
+    // Hold the tiles in document order before the old columns are torn down.
+    var tiles = Array.prototype.slice.call(grid.querySelectorAll('[data-gtile]'));
+    grid.textContent = '';
+    grid.setAttribute('data-built', want);
+
+    for (var i = 0; i < want; i++) {
+      var col = document.createElement('div');
+      col.setAttribute('data-gcol', '');
+      grid.appendChild(col);
+    }
+
+    tiles.forEach(function (tile) {
+      // A still-hidden tile measures zero, so park it and let the reveal
+      // place it properly once it has a height to balance against.
+      if (tile.hasAttribute('data-more-item')) grid.lastChild.appendChild(tile);
+      else shortestCol(grid).appendChild(tile);
+    });
+  }
+
   /* ---------------- mobile drawer ---------------- */
 
   function initDrawer() {
@@ -289,7 +347,7 @@
 
     // Alternating product rows are pure CSS now — see [data-prow] in site.css.
 
-    // The masonry gallery is pure CSS now — see [data-gallery] in site.css.
+    buildGallery();
 
     // Footer grid: 4-col -> 2-col -> 1-col.
     var fgrid = document.querySelector('[data-fgrid]');

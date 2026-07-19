@@ -98,16 +98,17 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
   [data-prow]:nth-of-type(even) > [data-pimg] { order: 2; }
 }
 
-/* ---- Masonry gallery. Multi-column rather than grid so each tile keeps its
-   picture's own proportions and the columns pack tight underneath — a grid
-   would have to force every tile to a shared row height and crop to fit.
-   Reading order runs down each column. ---- */
+/* ---- Masonry gallery. Each card is exactly its picture: full column width,
+   natural height, nothing cropped and nothing padded out. More, narrower
+   columns keep the section compact — a smaller picture is a shorter one.
+
+   site.js builds the columns (see buildGallery) rather than leaving it to
+   CSS multi-column, which balances for the shortest total height and so
+   strands the last column when there are only a few tall pictures. The
+   multi-column rules below remain as the no-JS fallback. ---- */
 [data-gallery] {
-  --gallery-gap: clamp(12px, 1.4vw, 18px);
-  /* Three, not four: balancing minimises total height, and with a handful of
-     tall tiles it will leave a fourth column empty however wide the screen,
-     which reads as a broken grid. Three fills reliably. */
-  column-count: 3;
+  --gallery-gap: clamp(10px, 1vw, 14px);
+  column-count: 4;
   column-gap: var(--gallery-gap);
 }
 
@@ -118,8 +119,26 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
   break-inside: avoid;
 }
 
-@media (max-width: 1023px) { [data-gallery] { column-count: 2; } }
-@media (max-width: 619px) { [data-gallery] { column-count: 1; } }
+/* Once the tiles have been distributed, real flex columns take over. */
+[data-gallery][data-built] {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--gallery-gap);
+  column-count: auto;
+}
+
+[data-gallery][data-built] [data-gtile] { margin-bottom: 0; }
+
+[data-gcol] {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gallery-gap);
+}
+
+@media (max-width: 1023px) { [data-gallery] { column-count: 3; } }
+@media (max-width: 619px) { [data-gallery] { column-count: 2; } }
 
 /* ---- Progressive lists ("view more"). A hidden item names the group it
    belongs to, and the button for that group reveals them a batch at a time.
@@ -174,8 +193,8 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 .vka-img--cover { object-fit: cover; }
 .vka-img--contain { object-fit: contain; }
 
-/* Height follows the picture instead of the box, so nothing is ever cropped
-   whatever shape gets uploaded — panoramic, portrait, square. */
+/* Height follows the picture instead of the box, so the card is exactly the
+   image — nothing cropped, nothing padded — whatever shape gets uploaded. */
 .vka-img--natural { position: static; width: 100%; height: auto; }
 
 /* ---- Reveal-on-scroll. Elements start hidden only when JS is present, so a

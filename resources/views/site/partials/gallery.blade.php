@@ -19,12 +19,12 @@
 
         <div data-gallery>
             @foreach ($gallery as $tile)
-                <div data-gtile data-reveal="3" @if ($loop->index >= $initialTiles) data-more-item="gallery" @endif style="position:relative;border-radius:24px;overflow:hidden;background:rgba(99,190,70,0.1);box-shadow:0 20px 50px rgba(33,80,60,0.1)">
+                <div data-gtile data-reveal="3" @if ($loop->index >= $initialTiles) data-more-item="gallery" @endif style="position:relative;border-radius:18px;overflow:hidden;background:rgba(99,190,70,0.1);box-shadow:0 14px 34px rgba(33,80,60,0.09)">
                     <div data-gimg style="display:block;transition:transform .8s cubic-bezier(.16,1,.3,1)">
                         <x-img-slot :src="\App\Support\MediaStore::url($tile->image_path)" :size="\App\Support\MediaStore::size($tile->image_path)" :placeholder="$tile->caption" fit="natural" />
                     </div>
-                    <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 48%,rgba(14,42,32,0.62) 100%)"></div>
-                    <span style="position:absolute;left:18px;bottom:16px;color:#FFFFFF;font-size:14px;font-weight:600;text-shadow:0 2px 8px rgba(0,0,0,0.3)">{{ $tile->caption }}</span>
+                    <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 52%,rgba(14,42,32,0.62) 100%)"></div>
+                    <span style="position:absolute;left:14px;bottom:12px;color:#FFFFFF;font-size:13px;font-weight:600;text-shadow:0 2px 8px rgba(0,0,0,0.3)">{{ $tile->caption }}</span>
                 </div>
             @endforeach
         </div>
