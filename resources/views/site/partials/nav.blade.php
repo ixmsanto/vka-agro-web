@@ -34,11 +34,11 @@
     </div>
 
     <div style="max-width:1440px;margin:0 auto;padding:0 clamp(18px,3vw,44px);height:clamp(66px,7vw,80px);display:flex;align-items:center;justify-content:space-between;gap:clamp(14px,2vw,32px)">
-        <a href="#hero" aria-label="VKA Agro Products home" style="display:flex;align-items:center;flex:0 0 auto">
+        <a href="#hero" aria-label="VKAAgroproducts home" style="display:flex;align-items:center;flex:0 0 auto">
             @if ($logo)
-                <img src="{{ $logo }}" alt="VKA Agro Products" style="height:clamp(42px,4.4vw,56px);width:auto;display:block">
+                <img src="{{ $logo }}" alt="VKAAgroproducts" style="height:clamp(42px,4.4vw,56px);width:auto;display:block">
             @else
-                <span style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-h3);line-height:1;color:#123C2D">VKA<span style="font-style:italic;color:#63BE46">&nbsp;Agro</span></span>
+                <span style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-h3);line-height:1;color:#123C2D">VKA<span style="font-style:italic;color:#63BE46">Agroproducts</span></span>
             @endif
         </a>
 

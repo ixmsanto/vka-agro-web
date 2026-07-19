@@ -29,10 +29,10 @@
         <div style="flex:1 1 min(440px,100%);order:1">
             <div data-reveal="0" style="display:inline-flex;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:8px 16px;font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:var(--ls-eyebrow);text-transform:uppercase;color:#2F8B3C">
                 <span class="vka-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#63BE46"></span>
-                About VKA Agro
+                About VKAAgroproducts
             </div>
             <h2 data-split="1" style="font-family:var(--font-display);font-weight:500;font-size:var(--fs-h2);line-height:var(--lh-heading);letter-spacing:var(--ls-heading);margin:var(--sp-3) 0 0;color:#123C2D">Rooted in Pollachi, <span style="font-style:italic;color:#63BE46">shipped worldwide.</span></h2>
-            <p data-reveal="2" style="font-size:var(--fs-body);line-height:var(--lh-body);color:#5E6862;margin:var(--sp-3) 0 0;max-width:52ch">From the coconut belt of Tamil Nadu, VKA Agro turns raw coir into precision-buffered coco peat, grow bags and husk chips. Every batch is washed, aged and tested for EC and pH before it leaves our floor — so growers from Europe to the Gulf plant with confidence.</p>
+            <p data-reveal="2" style="font-size:var(--fs-body);line-height:var(--lh-body);color:#5E6862;margin:var(--sp-3) 0 0;max-width:52ch">From the coconut belt of Tamil Nadu, VKAAgroproducts turns raw coir into precision-buffered coco peat, grow bags and husk chips. Every batch is washed, aged and tested for EC and pH before it leaves our floor — so growers from Europe to the Gulf plant with confidence.</p>
 
             <div data-reveal="3" style="display:flex;flex-direction:column;gap:var(--sp-3);margin-top:var(--sp-5);max-width:520px">
                 @foreach ($points as [$title, $sub, $icon])

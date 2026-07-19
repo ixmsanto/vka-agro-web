@@ -19,7 +19,7 @@
         <div style="text-align:center;max-width:660px;margin:0 auto var(--header-gap)">
             <div data-reveal="0" style="display:inline-flex;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:8px 16px;font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:var(--ls-eyebrow);text-transform:uppercase;color:#2F8B3C">
                 <span class="vka-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#63BE46"></span>
-                Why VKA Agro
+                Why VKAAgroproducts
             </div>
             <h2 data-split="1" style="font-family:var(--font-display);font-weight:500;font-size:var(--fs-h2);line-height:var(--lh-heading);letter-spacing:var(--ls-heading);margin:var(--sp-4) 0 0;color:#123C2D">A supplier your <span style="font-style:italic;color:#63BE46">agronomist</span> can trust.</h2>
             <p data-reveal="2" style="font-size:var(--fs-lead);line-height:var(--lh-body);color:#5E6862;margin:var(--sp-4) auto 0;max-width:520px">Consistent chemistry, honest grading and logistics that actually arrive on time.</p>

@@ -1,4 +1,4 @@
-/* VKA Agro — public site behaviour.
+/* VKAAgroproducts — public site behaviour.
    Ported from the design's DCLogic component: scroll reveals, mouse parallax,
    the sticky nav, the hero slideshow, the facility video and the measured
    layout that inline CSS can't express. No build step, no dependencies. */
