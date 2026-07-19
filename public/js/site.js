@@ -898,5 +898,15 @@
     setTimeout(settle, 350);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
     window.addEventListener('load', settle);
+
+    // Dismiss the loader once the first screen is genuinely ready — the modules
+    // above are wired and the webfonts have resolved. The loader's own fallback
+    // waits for window.load, which does not fire until every gallery and
+    // product image below the fold has arrived; there is no reason to hold a
+    // cover over a page that is already painted and usable.
+    if (window.vkaHideLoader) {
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(window.vkaHideLoader);
+      else window.vkaHideLoader();
+    }
   });
 })();

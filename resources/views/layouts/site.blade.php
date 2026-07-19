@@ -19,6 +19,18 @@
     <link rel="manifest" href="{{ asset('site.webmanifest') }}?v={{ $assetVersion }}">
     <meta name="theme-color" content="#123C2D">
 
+    {{-- The loader's mark is the very first thing a visitor sees, so it goes
+         out ahead of everything else. The nav logo follows at normal priority:
+         wanted early for the largest paint, but not at the stylesheet's
+         expense. --}}
+    @foreach (['mark-palm', 'mark-swoosh', 'mark-ring', 'mark-drop'] as $layer)
+        <link rel="preload" as="image" href="{{ asset($layer . '.png') }}?v={{ $assetVersion }}" fetchpriority="high">
+    @endforeach
+
+    @if ($logoUrl = \App\Models\Medium::url('logo'))
+        <link rel="preload" as="image" href="{{ $logoUrl }}">
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- Fraunces for display, Inter for everything else. Both are variable and
@@ -30,6 +42,9 @@
     @stack('head')
 </head>
 <body>
+    {{-- First thing in the body so it paints before anything below it. --}}
+    @include('site.partials.loader')
+
     @yield('body')
 
     <script src="{{ asset('js/site.js') }}?v={{ $assetVersion }}" defer></script>
