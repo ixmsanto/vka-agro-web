@@ -1,6 +1,6 @@
-# VKA Agro Exports
+# VKAAgroproducts Exports
 
-Marketing site + content-managed admin for VKA Agro, a Pollachi coco-peat
+Marketing site + content-managed admin for VKAAgroproducts, a Pollachi coco-peat
 exporter. Built on **Laravel 13** with **SQLite**, rendered with **Blade** —
 **no Node build step**, so it deploys to plain shared hosting over FTP.
 

@@ -32,7 +32,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="noindex, nofollow">
-    <title>@yield('title', 'Admin') · VKA Agro</title>
+    <title>@yield('title', 'Admin') · VKAAgroproducts</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
 
     <aside style="flex:0 0 auto;width:clamp(72px,20vw,248px);background:linear-gradient(180deg,#21503C,#123C2D);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;box-sizing:border-box;padding:22px 14px;overflow-y:auto">
         <div style="display:flex;align-items:center;gap:10px;padding:6px 8px 20px">
-            <div style="font-family:'Newsreader',serif;font-size:24px;line-height:1;white-space:nowrap">VKA<span style="font-style:italic;color:#63BE46">&nbsp;Agro</span></div>
+            <div style="font-family:'Newsreader',serif;font-size:24px;line-height:1;white-space:nowrap">VKA<span style="font-style:italic;color:#63BE46">Agroproducts</span></div>
         </div>
         <div class="a-sidebar-label" style="font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.4);padding:0 10px 8px">Manage</div>
 
@@ -82,7 +82,7 @@
                 <div style="width:38px;height:38px;border-radius:50%;background:#2F8B3C;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
                 <div style="line-height:1.2">
                     <div style="font-size:13.5px;font-weight:700;color:#21503C">{{ auth()->user()->name ?? 'Admin' }}</div>
-                    <div style="font-size:11.5px;color:#8A968E">VKA Agro</div>
+                    <div style="font-size:11.5px;color:#8A968E">VKAAgroproducts</div>
                 </div>
             </div>
         </header>

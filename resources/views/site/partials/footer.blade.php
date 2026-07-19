@@ -15,7 +15,7 @@
         <div data-fgrid style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:clamp(28px,4vw,64px);align-items:start">
 
             <div>
-                <div style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-stat);color:#FFFFFF">VKA<span style="font-style:italic;color:#63BE46">&nbsp;Agro</span></div>
+                <div style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-stat);color:#FFFFFF">VKA<span style="font-style:italic;color:#63BE46">Agroproducts</span></div>
                 <p style="font-size:var(--fs-sm);line-height:var(--lh-body);color:rgba(255,255,255,0.62);margin:var(--sp-3) 0 0;max-width:34ch">Premium coco peat, grow bags and husk chips — manufactured in Pollachi and exported to 40+ countries.</p>
                 <div style="display:flex;gap:var(--sp-2);margin-top:var(--sp-5)">
                     <a href="#" aria-label="LinkedIn" class="vka-social" style="width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;transition:background .3s ease, transform .3s ease, color .3s ease"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1-.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.4c0-1.3-.02-2.96-1.8-2.96-1.8 0-2.08 1.4-2.08 2.86V21H9z"/></svg></a>
@@ -63,7 +63,7 @@
         </div>
 
         <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--sp-3);margin-top:clamp(26px,3vw,36px);padding-top:20px;border-top:1px solid rgba(255,255,255,0.14)">
-            <div style="font-size:var(--fs-xs);color:rgba(255,255,255,0.5)">© {{ date('Y') }} VKA Agro Exports · Made in Tamil Nadu, India</div>
+            <div style="font-size:var(--fs-xs);color:rgba(255,255,255,0.5)">© {{ date('Y') }} VKAAgroproducts Exports · Made in Tamil Nadu, India</div>
             <div style="display:flex;flex-wrap:wrap;gap:var(--sp-4)">
                 <a href="#" class="vka-link-muted" style="font-size:var(--fs-xs);color:rgba(255,255,255,0.5)">Privacy Policy</a>
                 <a href="#" class="vka-link-muted" style="font-size:var(--fs-xs);color:rgba(255,255,255,0.5)">Terms of Trade</a>
