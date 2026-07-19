@@ -27,7 +27,7 @@
                         <p style="font-size:clamp(15px,1.1vw,16.5px);line-height:1.72;color:#5E6862;margin:16px 0 0;max-width:56ch">{{ $product->description }}</p>
 
                         @if ($product->specs->isNotEmpty())
-                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px 24px;margin-top:24px;max-width:460px">
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr));gap:14px 24px;margin-top:24px;max-width:460px">
                                 @foreach ($product->specs as $spec)
                                     <div><div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9AA69E;font-weight:700">{{ $spec->label }}</div><div style="font-size:15px;font-weight:700;color:#123C2D;margin-top:3px">{{ $spec->value }}</div></div>
                                 @endforeach
