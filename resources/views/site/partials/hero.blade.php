@@ -15,8 +15,8 @@
     ];
 @endphp
 
-<section id="hero" style="position:relative;background:radial-gradient(1200px 800px at 88% -10%, rgba(99,190,70,0.14), transparent 55%), radial-gradient(900px 700px at 6% 4%, rgba(255,255,255,0.9), transparent 60%), #FCFBF7;padding:78px 0 clamp(96px,10vw,150px);box-sizing:border-box;overflow:visible">
-    <div style="max-width:1460px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,3vw,56px);min-height:min(820px,94vh);padding:clamp(24px,4vw,60px) clamp(24px,5vw,68px) 0">
+<section id="hero" style="position:relative;background:radial-gradient(1200px 800px at 88% -10%, rgba(99,190,70,0.14), transparent 55%), radial-gradient(900px 700px at 6% 4%, rgba(255,255,255,0.9), transparent 60%), #FCFBF7;padding:64px 0 clamp(96px,10vw,150px);box-sizing:border-box;overflow:visible">
+    <div style="max-width:1460px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(24px,2.6vw,48px);min-height:min(660px,86vh);padding:clamp(18px,2.6vw,40px) clamp(24px,5vw,68px) 0">
 
         <div style="flex:1 1 400px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;z-index:2">
             <div data-reveal="1" style="display:inline-flex;align-self:flex-start;align-items:center;gap:10px;background:rgba(255,255,255,0.85);border:1px solid #E1EFDD;border-radius:999px;padding:9px 17px 9px 12px;font-size:12px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:#2F8B3C;box-shadow:0 6px 20px rgba(33,80,60,0.07);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
@@ -24,34 +24,38 @@
                 {{ $hero['badge'] }}
             </div>
 
-            <h1 data-reveal="2" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(52px,6vw,88px);line-height:1.0;letter-spacing:-0.02em;margin:22px 0 0;color:#123C2D">
+            <h1 data-reveal="2" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(46px,5.2vw,74px);line-height:1.02;letter-spacing:-0.02em;margin:16px 0 0;color:#123C2D">
                 {{ $hero['titleLine1'] }}<br>
                 <span style="font-style:italic;color:#63BE46">{{ $hero['titleAccent'] }}</span><br>
                 {{ $hero['titleLine3'] }}
             </h1>
 
-            <p data-reveal="3" style="font-size:clamp(16px,1.15vw,18.5px);line-height:1.72;color:#5E6862;max-width:500px;margin:22px 0 0">{{ $hero['subtitle'] }}</p>
+            <p data-reveal="3" style="font-size:clamp(15px,1vw,17px);line-height:1.62;color:#5E6862;max-width:500px;margin:15px 0 0">{{ $hero['subtitle'] }}</p>
 
-            <div data-reveal="4" style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:28px">
+            <div data-reveal="4" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px">
                 <a href="#contact" class="vka-btn-primary" style="display:inline-flex;align-items:center;gap:11px;background:#2F8B3C;color:#FFFFFF;padding:18px 34px;border-radius:999px;font-size:15.5px;font-weight:600;box-shadow:0 14px 34px rgba(47,139,60,0.32)">Request a Quote <span aria-hidden="true" style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);align-items:center;justify-content:center">→</span></a>
                 <a href="#products" class="vka-btn-ghost" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.7);border:1.5px solid #CFE3CC;color:#2F8B3C;padding:16px 28px;border-radius:999px;font-size:15px;font-weight:600">Explore Products <span aria-hidden="true">→</span></a>
             </div>
 
-            <div data-reveal="5" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:32px">
+            <div data-reveal="5" style="display:flex;flex-wrap:wrap;gap:9px;margin-top:22px">
                 @foreach ($badges as $badge)
                     <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#21503C;background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:9px 16px 9px 12px;box-shadow:0 4px 14px rgba(33,80,60,0.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"><span style="width:18px;height:18px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $badge }}</span>
                 @endforeach
             </div>
         </div>
 
-        <div style="flex:1.42 1 560px;position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:clamp(520px,58vw,760px);z-index:1">
+        {{-- The floor used to be 520px, which on a phone reserved ~130px of empty
+             space below a slideshow only ~390px tall. --}}
+        <div style="flex:1.42 1 560px;position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:clamp(340px,44vw,620px);z-index:1">
 
             {{-- soft golden core + green halo behind the product --}}
             <div style="position:absolute;width:94%;height:90%;right:1%;top:5%;background:radial-gradient(closest-side at 55% 46%, rgba(255,210,128,0.5), rgba(255,210,128,0.2) 36%, rgba(99,190,70,0.16) 60%, transparent 78%);filter:blur(28px);z-index:0;pointer-events:none"></div>
             <div style="position:absolute;width:58%;height:52%;right:9%;bottom:3%;background:radial-gradient(closest-side, rgba(99,190,70,0.24), transparent 72%);filter:blur(34px);z-index:0;pointer-events:none"></div>
 
             {{-- product slideshow — overflows freely, drop-shadow only, no card --}}
-            <div data-reveal="2" data-parallax data-depth="0.5" style="position:relative;width:100%;max-width:660px;aspect-ratio:1080 / 1350;z-index:2;filter:drop-shadow(0 48px 46px rgba(33,80,60,0.26)) drop-shadow(0 14px 22px rgba(33,80,60,0.14))">
+            {{-- At 1080/1350 the height is 1.25x the width, so this cap is what
+                 set the hero's height: 660px wide meant 825px tall. --}}
+            <div data-reveal="2" data-parallax data-depth="0.5" style="position:relative;width:100%;max-width:545px;aspect-ratio:1080 / 1350;z-index:2;filter:drop-shadow(0 48px 46px rgba(33,80,60,0.26)) drop-shadow(0 14px 22px rgba(33,80,60,0.14))">
                 <div class="vka-float" style="position:absolute;inset:0">
                     @foreach ($slides as $i => $slide)
                         <div data-slide="{{ $i }}" style="position:absolute;inset:0;opacity:{{ $i === 0 ? 1 : 0 }};transition:opacity 1s cubic-bezier(.4,0,.2,1)">
@@ -119,7 +123,7 @@
         </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin:clamp(26px,3.5vw,44px) auto 0">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:7px;margin:clamp(14px,1.8vw,24px) auto 0">
         <span style="width:26px;height:42px;border-radius:14px;border:2px solid rgba(33,80,60,0.28);position:relative;display:inline-block">
             <span style="position:absolute;left:50%;top:8px;margin-left:-2.5px;width:5px;height:5px;border-radius:50%;background:#2F8B3C;animation:vkaScroll 1.9s ease-in-out infinite"></span>
         </span>
@@ -130,8 +134,8 @@
     <div data-feat-wrap style="position:absolute;left:0;right:0;bottom:0;transform:translateY(46%);z-index:6;padding:0 clamp(20px,4vw,48px);pointer-events:none">
         <div data-feat-grid style="max-width:1180px;margin:0 auto;background:#FFFFFF;border:1px solid #EEF3EC;border-radius:26px;box-shadow:0 30px 70px rgba(33,80,60,0.16);display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;pointer-events:auto">
             @foreach ($features as $i => [$title, $sub, $icon])
-                <div data-feat data-reveal="{{ $i + 6 }}" style="display:flex;align-items:center;gap:15px;padding:clamp(24px,2.4vw,30px) clamp(22px,2vw,30px);border-right:1px solid #EEF3EC">
-                    <span style="width:52px;height:52px;flex:0 0 auto;border-radius:15px;background:#EDF8EC;display:inline-flex;align-items:center;justify-content:center;color:#2F8B3C"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{!! $icon !!}</svg></span>
+                <div data-feat data-reveal="{{ $i + 6 }}" style="display:flex;align-items:center;gap:13px;padding:clamp(15px,1.7vw,23px) clamp(18px,1.7vw,26px);border-right:1px solid #EEF3EC">
+                    <span style="width:44px;height:44px;flex:0 0 auto;border-radius:13px;background:#EDF8EC;display:inline-flex;align-items:center;justify-content:center;color:#2F8B3C"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{!! $icon !!}</svg></span>
                     <div><div style="font-size:16px;font-weight:700;color:#123C2D">{{ $title }}</div><div style="font-size:13px;color:#7A857E;margin-top:2px">{{ $sub }}</div></div>
                 </div>
             @endforeach
