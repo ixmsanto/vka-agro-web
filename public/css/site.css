@@ -93,9 +93,23 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 [data-prow] { display: grid; grid-template-columns: minmax(0, 1fr); }
 
 @media (min-width: 860px) {
-  [data-prow] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* The photo takes the narrower track. Its height comes from its width, and
+     at an even split it out-grew the copy beside it and set the row height on
+     its own; trimmed to this it lands level with the text instead. The tracks
+     swap on alternate rows so the photo stays the narrow one either side. */
+  [data-prow] { grid-template-columns: 0.85fr 1.15fr; }
+  [data-prow]:nth-of-type(even) { grid-template-columns: 1.15fr 0.85fr; }
   /* Photo right on every second row; it leads on mobile regardless. */
   [data-prow]:nth-of-type(even) > [data-pimg] { order: 2; }
+}
+
+/* ---- About. The photo is a 4/5 portrait, so its height is 1.25x its width
+   and at half the row it stood 741px tall and set the section height on its
+   own. Capping the width brings it level with the copy beside it without
+   changing the crop. Only while the two sit side by side: below this the row
+   wraps and the cap would just strand empty space beside the picture. ---- */
+@media (min-width: 1024px) {
+  [data-about-photo] { max-width: 470px; }
 }
 
 /* ---- Masonry gallery. Each card is exactly its picture: full column width,

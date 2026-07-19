@@ -3,18 +3,23 @@
     $file = \App\Models\Medium::url('facility-video');
 @endphp
 
-<section id="video" style="padding:clamp(20px,4vw,60px) 0 clamp(80px,10vw,130px)">
+{{-- The top padding is measured and overwritten by site.js, which slides the
+     hero's feature strip down over this boundary. --}}
+<section id="video" style="padding:clamp(20px,4vw,60px) 0 clamp(52px,6vw,84px)">
     <div style="max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
-        <div data-reveal="1" style="text-align:center;max-width:640px;margin:0 auto clamp(32px,4vw,52px)">
+        <div data-reveal="1" style="text-align:center;max-width:640px;margin:0 auto clamp(22px,2.6vw,34px)">
             <div style="display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:#2F8B3C">
                 <span class="vka-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#63BE46"></span>
                 {{ $video['badge'] }}
             </div>
-            <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(34px,4.4vw,60px);line-height:1.04;letter-spacing:-0.015em;margin:18px 0 0;color:#123C2D">{{ $video['headingPre'] }}<span style="font-style:italic;color:#63BE46">{{ $video['headingAccent'] }}</span></h2>
-            <p style="font-size:clamp(15px,1.1vw,17px);line-height:1.65;color:#5E6862;margin:16px auto 0;max-width:520px">{{ $video['subtitle'] }}</p>
+            <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(28px,3.4vw,44px);line-height:1.04;letter-spacing:-0.015em;margin:14px 0 0;color:#123C2D">{{ $video['headingPre'] }}<span style="font-style:italic;color:#63BE46">{{ $video['headingAccent'] }}</span></h2>
+            <p style="font-size:clamp(14.5px,1vw,15.5px);line-height:1.6;color:#5E6862;margin:11px auto 0;max-width:520px">{{ $video['subtitle'] }}</p>
         </div>
 
-        <div data-reveal="2" style="position:relative;width:100%;aspect-ratio:2400 / 1350;border-radius:clamp(18px,2vw,28px);overflow:hidden;box-shadow:0 40px 90px rgba(33,80,60,0.22), 0 12px 30px rgba(33,80,60,0.1);background:#0E2A20">
+        {{-- Capped rather than full-bleed: at 16:9 the player's height is its
+             width, so spanning the whole container made it 725px tall and the
+             tallest thing on the page. --}}
+        <div data-reveal="2" style="position:relative;width:100%;max-width:980px;margin:0 auto;aspect-ratio:2400 / 1350;border-radius:clamp(16px,1.6vw,22px);overflow:hidden;box-shadow:0 26px 60px rgba(33,80,60,0.2), 0 10px 24px rgba(33,80,60,0.09);background:#0E2A20">
             <video id="vka-video" playsinline preload="metadata" @if ($poster) poster="{{ $poster }}" @endif style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
                 @if ($file)
                     <source src="{{ $file }}">
