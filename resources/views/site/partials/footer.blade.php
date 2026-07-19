@@ -3,8 +3,15 @@
     $productLinks = ['#products' => ['Coco peat 5 Kg blocks', 'Coco coir briquettes', 'Coco coir grow bags', 'Coco husk chips'], '#contact' => ['Custom blends']];
 @endphp
 
-<footer style="margin:0 clamp(12px,2vw,28px) clamp(12px,2vw,28px);background:linear-gradient(160deg, rgba(33,80,60,0.94), rgba(23,60,44,0.96));border:1px solid rgba(255,255,255,0.12);border-radius:26px;padding:clamp(34px,4vw,52px) 0 26px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 24px 60px rgba(33,80,60,0.22)">
-    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(24px,4vw,56px)">
+<footer style="margin:0 clamp(12px,2vw,28px) clamp(12px,2vw,28px);background:linear-gradient(160deg, rgba(33,80,60,0.94), rgba(23,60,44,0.96));border:1px solid rgba(255,255,255,0.12);border-radius:26px;padding:clamp(34px,4vw,52px) 0 26px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 24px 60px rgba(33,80,60,0.22);position:relative;overflow:hidden">
+    {{-- Light marks rather than green ones: the panel behind these is dark, and
+         overflow:hidden keeps them inside its rounded corners. --}}
+    <x-deco shape="husk" size="120" color="#FFFFFF" opacity="0.09" pos="top:-26px;right:-22px" motion="spin" wide />
+    <x-deco shape="leaf" size="44" color="#63BE46" opacity="0.34" pos="bottom:32%;right:15%" motion="drift" delay="1.4s" rotate="24" wide />
+    <x-deco shape="dots" size="46" color="#FFFFFF" opacity="0.12" pos="bottom:-8px;left:2%" motion="float-slow" delay="2.2s" wide />
+    <x-deco shape="sparkle" size="16" color="#63BE46" opacity="0.46" pos="top:9%;left:47%" motion="float" delay="0.7s" wide />
+
+    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(24px,4vw,56px);position:relative;z-index:1">
         <div data-fgrid style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:clamp(28px,4vw,64px);align-items:start">
 
             <div>
