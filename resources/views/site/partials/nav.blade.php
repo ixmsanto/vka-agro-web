@@ -36,7 +36,11 @@
     <div style="max-width:1440px;margin:0 auto;padding:0 clamp(18px,3vw,44px);height:clamp(66px,7vw,80px);display:flex;align-items:center;justify-content:space-between;gap:clamp(14px,2vw,32px)">
         <a href="#hero" aria-label="VKAAgroproducts home" style="display:flex;align-items:center;flex:0 0 auto">
             @if ($logo)
-                <img src="{{ $logo }}" alt="VKAAgroproducts" style="height:clamp(42px,4.4vw,56px);width:auto;display:block">
+                {{-- Sized against the main bar, which is clamp(66px,7vw,80px)
+                     tall. The upload this replaced carried 71% transparent
+                     padding, so the artwork only ever filled about a third of
+                     whatever height was set here. --}}
+                <img src="{{ $logo }}" alt="VKAAgroproducts" width="491" height="151" style="height:clamp(36px,3.4vw,46px);width:auto;display:block">
             @else
                 <span style="font-family:var(--font-display);font-weight:600;font-size:var(--fs-h3);line-height:1;color:#123C2D">VKA<span style="font-style:italic;color:#63BE46">Agroproducts</span></span>
             @endif

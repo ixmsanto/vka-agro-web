@@ -8,6 +8,17 @@
     <title>@yield('title', 'VKAAgroproducts Exports — Premium Coco Peat, Grow Bags & Husk Chips')</title>
     <meta name="description" content="@yield('description', 'Premium coco peat blocks, briquettes, grow bags and husk chips. Buffered, low-EC and batch-tested — manufactured in Pollachi, Tamil Nadu and exported to 40+ countries.')">
 
+    {{-- Generated from the palm/coconut emblem in the logo. favicon.ico carries
+         16/32/48 for browsers that ask for it by convention; the PNG links win
+         where they are understood. The version query matters more here than
+         elsewhere — browsers cache favicons far more stubbornly than assets. --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ $assetVersion }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}?v={{ $assetVersion }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}?v={{ $assetVersion }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}?v={{ $assetVersion }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}?v={{ $assetVersion }}">
+    <meta name="theme-color" content="#123C2D">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- Fraunces for display, Inter for everything else. Both are variable and
