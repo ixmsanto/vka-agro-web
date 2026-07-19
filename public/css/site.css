@@ -3,6 +3,76 @@
    (as designed); this file owns what inline styles cannot express: keyframes,
    media queries and the empty-image-slot treatment. */
 
+/* ============================================================
+   Design tokens
+
+   The page used to carry 28 distinct font sizes — twelve of them between 11px
+   and 16.5px — along with 15 line-heights, 12 letter-spacings and 10 unrelated
+   section rhythms. None of it was proportional to anything else, which is what
+   made the typography read as untidy however good the typeface was.
+
+   What follows is one scale. Sizes step by roughly 1.25, spacing by 4px, and
+   every value in the markup now names one of these instead of inventing its
+   own. Declared here rather than inline because a token is only worth having
+   if there is a single place to change it.
+   ============================================================ */
+:root {
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fluid from a 360px phone to a 1440px desktop: each interpolates so that it
+     hits the low end at 360 and the high end at 1440, rather than guessing at a
+     vw multiplier. The whole scale sits about 10% above where it started —
+     against this much whitespace the first pass read as undersized. */
+  --fs-display: clamp(2.875rem, 2.167rem + 3.15vw, 5rem);    /* 46 -> 80 */
+  --fs-h2: clamp(2.125rem, 1.708rem + 1.85vw, 3.375rem);     /* 34 -> 54 */
+  --fs-h3: clamp(1.5rem, 1.333rem + 0.74vw, 2rem);           /* 24 -> 32 */
+  --fs-stat: clamp(1.8125rem, 1.542rem + 1.2vw, 2.625rem);   /* 29 -> 42 */
+  --fs-lead: clamp(1.125rem, 1.0625rem + 0.28vw, 1.3125rem); /* 18 -> 21 */
+  --fs-body: 1.0625rem;                                      /* 17 */
+  --fs-sm: 0.9375rem;                                        /* 15 */
+  --fs-xs: 0.875rem;                                         /* 14 */
+  --fs-eyebrow: 0.75rem;                                     /* 12 */
+
+  /* Tighter as the type gets larger — big text needs less leading, not more. */
+  --lh-display: 1.03;
+  --lh-heading: 1.14;
+  --lh-snug: 1.35;
+  --lh-body: 1.65;
+
+  /* Optical tracking: negative at display sizes, wide only for small caps. */
+  --ls-display: -0.028em;
+  --ls-heading: -0.018em;
+  --ls-eyebrow: 0.13em;
+  /* Wide tracking is for uppercase only. A sentence-case label like
+     "Countries served" just looks loose at eyebrow tracking. */
+  --ls-label: 0.02em;
+
+  /* 4px base. Margins in the markup ran 2/4/7/10/12/13/14/15/16/18/20/22/24 and
+     gaps 3/4/5/6/7/8/9/10/11/12/14/16/18 — near-identical values that read as
+     misalignment rather than as steps. Everything now lands on one of these. */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 48px;
+  --sp-10: 64px;
+
+  /* One vertical rhythm for every section, one gutter for every container. */
+  --section-y: clamp(72px, 8vw, 116px);
+  --gutter: clamp(20px, 4vw, 48px);
+  /* The gap between a section header block and its content. Was three
+     different values across five sections. */
+  --header-gap: clamp(34px, 4vw, 56px);
+
+  /* Body copy stops being comfortable much past this. */
+  --measure: 64ch;
+}
+
 html { scroll-behavior: smooth; }
 
 /* Clip on the root as well as the body: the body-only rule relies on overflow
@@ -13,8 +83,13 @@ html, body { overflow-x: hidden; }
 body {
   margin: 0;
   color: #21503C;
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  /* Both families carry an opsz axis; this is what actually engages it. */
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   background:
     radial-gradient(1100px 700px at 12% -8%, rgba(99,190,70,0.32), transparent 60%),
@@ -23,6 +98,33 @@ body {
     linear-gradient(180deg, #F3FAF0 0%, #EAF6E6 100%);
   background-attachment: fixed;
 }
+
+/* Section headings take the display face. Fraunces at 400 is too light to carry
+   a 74px headline — 500 gives it the presence the old face had at 400. */
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--ls-heading);
+  font-optical-sizing: auto;
+  margin: 0;
+}
+
+h1 { line-height: var(--lh-display); letter-spacing: var(--ls-display); }
+
+/* Card titles stay on the UI face. They sit a few lines above body copy in a
+   small box, and a serif at that size competes with the section heading above
+   instead of sitting under it. The one exception — the product row title — asks
+   for the display family inline, because there it is the heading. */
+h3, h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.008em;
+  margin: 0;
+}
+
+p { margin: 0; }
 
 a { color: #21503C; text-decoration: none; }
 a:hover { color: #63BE46; }

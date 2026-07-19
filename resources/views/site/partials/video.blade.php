@@ -10,14 +10,14 @@
     <x-deco shape="ring" size="58" pos="bottom:14%;right:4%" opacity="0.25" motion="float-slow" delay="1.2s" wide />
     <x-deco shape="leaf" size="30" pos="top:26%;right:8%" opacity="0.36" motion="drift" delay="2.4s" rotate="20" wide />
 
-    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,48px);position:relative;z-index:1">
-        <div data-reveal="1" style="text-align:center;max-width:640px;margin:0 auto clamp(22px,2.6vw,34px)">
-            <div style="display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:#2F8B3C">
+    <div style="max-width:1400px;margin:0 auto;padding:0 var(--gutter);position:relative;z-index:1">
+        <div data-reveal="1" style="text-align:center;max-width:640px;margin:0 auto var(--header-gap)">
+            <div style="display:inline-flex;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:8px 16px;font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:var(--ls-eyebrow);text-transform:uppercase;color:#2F8B3C">
                 <span class="vka-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#63BE46"></span>
                 {{ $video['badge'] }}
             </div>
-            <h2 data-split="1" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(28px,3.4vw,44px);line-height:1.04;letter-spacing:-0.015em;margin:14px 0 0;color:#123C2D">{{ $video['headingPre'] }}<span style="font-style:italic;color:#63BE46">{{ $video['headingAccent'] }}</span></h2>
-            <p style="font-size:clamp(14.5px,1vw,15.5px);line-height:1.6;color:#5E6862;margin:11px auto 0;max-width:520px">{{ $video['subtitle'] }}</p>
+            <h2 data-split="1" style="font-family:var(--font-display);font-weight:500;font-size:var(--fs-h2);line-height:var(--lh-display);letter-spacing:var(--ls-heading);margin:var(--sp-3) 0 0;color:#123C2D">{{ $video['headingPre'] }}<span style="font-style:italic;color:#63BE46">{{ $video['headingAccent'] }}</span></h2>
+            <p style="font-size:var(--fs-body);line-height:var(--lh-body);color:#5E6862;margin:var(--sp-3) auto 0;max-width:520px">{{ $video['subtitle'] }}</p>
         </div>
 
         {{-- Capped rather than full-bleed: at 16:9 the player's height is its
@@ -42,7 +42,7 @@
                 </button>
             @endif
 
-            <div style="position:absolute;left:clamp(16px,2vw,28px);bottom:clamp(16px,2vw,28px);z-index:3;display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.85);border-radius:999px;padding:8px 15px;font-size:12.5px;font-weight:600;color:#21503C;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
+            <div style="position:absolute;left:clamp(16px,2vw,28px);bottom:clamp(16px,2vw,28px);z-index:3;display:inline-flex;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.85);border-radius:999px;padding:8px 15px;font-size:var(--fs-xs);font-weight:600;color:#21503C;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2F8B3C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
                 {{ $video['caption'] }}
             </div>

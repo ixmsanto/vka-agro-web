@@ -23,29 +23,29 @@
     <div style="max-width:1460px;margin:0 auto;position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(24px,2.6vw,48px);min-height:min(660px,86vh);padding:clamp(18px,2.6vw,40px) clamp(24px,5vw,68px) 0">
 
         <div style="flex:1 1 400px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;z-index:2">
-            <div data-reveal="1" style="display:inline-flex;align-self:flex-start;align-items:center;gap:10px;background:rgba(255,255,255,0.85);border:1px solid #E1EFDD;border-radius:999px;padding:9px 17px 9px 12px;font-size:12px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:#2F8B3C;box-shadow:0 6px 20px rgba(33,80,60,0.07);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+            <div data-reveal="1" style="display:inline-flex;align-self:flex-start;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.85);border:1px solid #E1EFDD;border-radius:999px;padding:9px 17px 9px 12px;font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:var(--ls-eyebrow);text-transform:uppercase;color:#2F8B3C;box-shadow:0 6px 20px rgba(33,80,60,0.07);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
                 <span class="vka-pulse-dot" style="width:9px;height:9px;border-radius:50%;background:#63BE46;flex:0 0 auto"></span>
                 {{ $hero['badge'] }}
             </div>
 
             {{-- data-split, not data-reveal: site.js wraps each word in its own
                  clipping window so the line assembles itself. --}}
-            <h1 data-split="2" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(46px,5.2vw,74px);line-height:1.02;letter-spacing:-0.02em;margin:16px 0 0;color:#123C2D">
+            <h1 data-split="2" style="font-family:var(--font-display);font-weight:500;font-size:var(--fs-display);line-height:var(--lh-display);letter-spacing:var(--ls-display);margin:var(--sp-4) 0 0;color:#123C2D">
                 {{ $hero['titleLine1'] }}<br>
                 <span style="font-style:italic;color:#63BE46">{{ $hero['titleAccent'] }}</span><br>
                 {{ $hero['titleLine3'] }}
             </h1>
 
-            <p data-reveal="3" style="font-size:clamp(15px,1vw,17px);line-height:1.62;color:#5E6862;max-width:500px;margin:15px 0 0">{{ $hero['subtitle'] }}</p>
+            <p data-reveal="3" style="font-size:var(--fs-lead);line-height:var(--lh-body);color:#5E6862;max-width:500px;margin:var(--sp-4) 0 0">{{ $hero['subtitle'] }}</p>
 
-            <div data-reveal="4" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px">
-                <a href="#contact" class="vka-btn-primary" style="display:inline-flex;align-items:center;gap:11px;background:#2F8B3C;color:#FFFFFF;padding:18px 34px;border-radius:999px;font-size:15.5px;font-weight:600;box-shadow:0 14px 34px rgba(47,139,60,0.32)">Request a Quote <span aria-hidden="true" style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);align-items:center;justify-content:center">→</span></a>
-                <a href="#products" class="vka-btn-ghost" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.7);border:1.5px solid #CFE3CC;color:#2F8B3C;padding:16px 28px;border-radius:999px;font-size:15px;font-weight:600">Explore Products <span aria-hidden="true">→</span></a>
+            <div data-reveal="4" style="display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3);margin-top:var(--sp-5)">
+                <a href="#contact" class="vka-btn-primary" style="display:inline-flex;align-items:center;gap:var(--sp-3);background:#2F8B3C;color:#FFFFFF;padding:18px 34px;border-radius:999px;font-size:var(--fs-body);font-weight:600;box-shadow:0 14px 34px rgba(47,139,60,0.32)">Request a Quote <span aria-hidden="true" style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);align-items:center;justify-content:center">→</span></a>
+                <a href="#products" class="vka-btn-ghost" style="display:inline-flex;align-items:center;gap:var(--sp-2);background:rgba(255,255,255,0.7);border:1.5px solid #CFE3CC;color:#2F8B3C;padding:16px 28px;border-radius:999px;font-size:var(--fs-body);font-weight:600">Explore Products <span aria-hidden="true">→</span></a>
             </div>
 
-            <div data-reveal="5" style="display:flex;flex-wrap:wrap;gap:9px;margin-top:22px">
+            <div data-reveal="5" style="display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-5)">
                 @foreach ($badges as $badge)
-                    <span style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#21503C;background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:9px 16px 9px 12px;box-shadow:0 4px 14px rgba(33,80,60,0.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"><span style="width:18px;height:18px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $badge }}</span>
+                    <span style="display:inline-flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-sm);font-weight:600;color:#21503C;background:rgba(255,255,255,0.75);border:1px solid #E1EFDD;border-radius:999px;padding:9px 16px 9px 12px;box-shadow:0 4px 14px rgba(33,80,60,0.06);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)"><span style="width:18px;height:18px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $badge }}</span>
                 @endforeach
             </div>
         </div>
@@ -87,7 +87,7 @@
 
                 {{-- Inside the frame now, so the dots need a surface of their own
                      to stay legible over whatever photograph sits behind them. --}}
-                <div style="position:absolute;bottom:clamp(12px,1.6vw,20px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;z-index:5;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.7);border-radius:999px;padding:8px 13px;box-shadow:0 8px 24px rgba(33,80,60,0.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
+                <div style="position:absolute;bottom:clamp(12px,1.6vw,20px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:var(--sp-2);z-index:5;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.7);border-radius:999px;padding:8px 13px;box-shadow:0 8px 24px rgba(33,80,60,0.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
                     @foreach ($slides as $i => $slide)
                         <button type="button" data-dot="{{ $i }}" aria-label="Slide {{ $i + 1 }}" style="width:{{ $i === 0 ? 26 : 9 }}px;height:9px;padding:0;border:none;border-radius:999px;background:{{ $i === 0 ? '#2F8B3C' : 'rgba(33,80,60,0.25)' }};cursor:pointer;transition:width .4s ease, background .4s ease"></button>
                     @endforeach
@@ -111,38 +111,38 @@
                     </defs>
                     <circle cx="56" cy="56" r="55" fill="#2F8B3C"/>
                     <g class="vka-spin">
-                        <text font-family="Manrope, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.6" fill="#FFFFFF"><textPath href="#seal-top" startOffset="50%" text-anchor="middle">NATURAL PRODUCT</textPath></text>
-                        <text font-family="Manrope, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.9" dy="6.2" fill="#FFFFFF"><textPath href="#seal-bot" startOffset="50%" text-anchor="middle">PREMIUM QUALITY</textPath></text>
+                        <text font-family="Inter, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.6" fill="#FFFFFF"><textPath href="#seal-top" startOffset="50%" text-anchor="middle">NATURAL PRODUCT</textPath></text>
+                        <text font-family="Inter, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.9" dy="6.2" fill="#FFFFFF"><textPath href="#seal-bot" startOffset="50%" text-anchor="middle">PREMIUM QUALITY</textPath></text>
                         <circle cx="10.7" cy="56" r="1.6" fill="#FFFFFF"/>
                         <circle cx="101.3" cy="56" r="1.6" fill="#FFFFFF"/>
                     </g>
                     {{-- y=64 sits the cap-height centre of the digits on the circle centre. --}}
-                    <text x="56" y="64" text-anchor="middle" font-family="Manrope, sans-serif" font-size="23" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">100%</text>
+                    <text x="56" y="64" text-anchor="middle" font-family="Inter, sans-serif" font-size="23" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">100%</text>
                 </svg>
             </div>
 
                 {{-- floating glass card: product spec --}}
                 <div data-hero-spec data-reveal="4" data-parallax data-depth="2.4" style="background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 18px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
-                <div style="display:flex;align-items:center;gap:10px">
+                <div style="display:flex;align-items:center;gap:var(--sp-2)">
                     <span style="width:36px;height:36px;border-radius:10px;background:#EDF8EC;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#2F8B3C"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>
-                    <span style="font-size:14.5px;font-weight:700;color:#123C2D;line-height:1.15">5KG Coco Peat<br>Block</span>
+                    <span style="font-size:var(--fs-sm);font-weight:700;color:#123C2D;line-height:var(--lh-heading)">5KG Coco Peat<br>Block</span>
                 </div>
-                <div style="height:1px;background:rgba(33,80,60,0.1);margin:13px 0"></div>
-                <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="height:1px;background:rgba(33,80,60,0.1);margin:var(--sp-3) 0"></div>
+                <div style="display:flex;flex-direction:column;gap:var(--sp-2)">
                     @foreach (['Expands to 75 Litres', 'Buffered', 'Low EC < 0.5'] as $point)
-                        <span style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:#2E4A3C"><span style="width:16px;height:16px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $point }}</span>
+                        <span style="display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-xs);font-weight:500;color:#2E4A3C"><span style="width:16px;height:16px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $point }}</span>
                     @endforeach
                     </div>
                 </div>
 
                 {{-- floating glass card: export stats --}}
                 <div data-hero-stats data-reveal="5" data-parallax data-depth="2.9" style="background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 20px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
-                <div style="display:flex;align-items:center;gap:18px">
-                    <div><div data-count style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">40+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Countries</div></div>
+                <div style="display:flex;align-items:center;gap:var(--sp-4)">
+                    <div><div data-count style="font-family:var(--font-display);font-size:var(--fs-stat);line-height:1;color:#2F8B3C">40+</div><div style="font-size:var(--fs-eyebrow);font-weight:600;letter-spacing:var(--ls-label);color:#7A857E;margin-top:var(--sp-1)">Countries</div></div>
                     <div style="width:1px;height:34px;background:rgba(33,80,60,0.12)"></div>
-                    <div><div data-count style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">50k+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Tons exported</div></div>
+                    <div><div data-count style="font-family:var(--font-display);font-size:var(--fs-stat);line-height:1;color:#2F8B3C">50k+</div><div style="font-size:var(--fs-eyebrow);font-weight:600;letter-spacing:var(--ls-label);color:#7A857E;margin-top:var(--sp-1)">Tons exported</div></div>
                 </div>
-                <div style="display:inline-flex;align-items:center;gap:7px;margin-top:13px;background:#EDF8EC;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#2F8B3C"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>Premium Export Quality</div>
+                <div style="display:inline-flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-3);background:#EDF8EC;border-radius:999px;padding:6px 12px;font-size:var(--fs-eyebrow);font-weight:700;letter-spacing:var(--ls-eyebrow);text-transform:uppercase;color:#2F8B3C"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>Premium Export Quality</div>
                 </div>
 
             </div>
@@ -150,20 +150,20 @@
         </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;align-items:center;gap:7px;margin:clamp(14px,1.8vw,24px) auto 0">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:var(--sp-2);margin:clamp(14px,1.8vw,24px) auto 0">
         <span style="width:26px;height:42px;border-radius:14px;border:2px solid rgba(33,80,60,0.28);position:relative;display:inline-block">
             <span style="position:absolute;left:50%;top:8px;margin-left:-2.5px;width:5px;height:5px;border-radius:50%;background:#2F8B3C;animation:vkaScroll 1.9s ease-in-out infinite"></span>
         </span>
-        <span style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:#8A968E">Scroll</span>
+        <span style="font-size:var(--fs-eyebrow);letter-spacing:var(--ls-eyebrow);text-transform:uppercase;font-weight:600;color:#8A968E">Scroll</span>
     </div>
 
     {{-- feature strip; JS measures its height and overlaps it into the video section --}}
-    <div data-feat-wrap style="position:absolute;left:0;right:0;bottom:0;transform:translateY(46%);z-index:6;padding:0 clamp(20px,4vw,48px);pointer-events:none">
+    <div data-feat-wrap style="position:absolute;left:0;right:0;bottom:0;transform:translateY(46%);z-index:6;padding:0 var(--gutter);pointer-events:none">
         <div data-feat-grid style="max-width:1180px;margin:0 auto;background:#FFFFFF;border:1px solid #EEF3EC;border-radius:26px;box-shadow:0 30px 70px rgba(33,80,60,0.16);display:grid;grid-template-columns:repeat(4,1fr);overflow:hidden;pointer-events:auto">
             @foreach ($features as $i => [$title, $sub, $icon])
-                <div data-feat data-reveal="{{ $i + 6 }}" style="display:flex;align-items:center;gap:13px;padding:clamp(15px,1.7vw,23px) clamp(18px,1.7vw,26px);border-right:1px solid #EEF3EC">
+                <div data-feat data-reveal="{{ $i + 6 }}" style="display:flex;align-items:center;gap:var(--sp-3);padding:clamp(15px,1.7vw,23px) clamp(18px,1.7vw,26px);border-right:1px solid #EEF3EC">
                     <span style="width:44px;height:44px;flex:0 0 auto;border-radius:13px;background:#EDF8EC;display:inline-flex;align-items:center;justify-content:center;color:#2F8B3C"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">{!! $icon !!}</svg></span>
-                    <div><div style="font-size:16px;font-weight:700;color:#123C2D">{{ $title }}</div><div style="font-size:13px;color:#7A857E;margin-top:2px">{{ $sub }}</div></div>
+                    <div><div style="font-size:var(--fs-body);font-weight:700;color:#123C2D">{{ $title }}</div><div style="font-size:var(--fs-xs);color:#7A857E;margin-top:var(--sp-1)">{{ $sub }}</div></div>
                 </div>
             @endforeach
         </div>
