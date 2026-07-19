@@ -70,15 +70,25 @@
             {{-- rotating organic seal --}}
             <div data-reveal="3" data-parallax data-depth="1.7" style="position:absolute;top:clamp(4px,3vw,46px);right:clamp(0px,2vw,30px);border-radius:50%;box-shadow:0 0 0 8px rgba(252,251,247,0.4), 0 18px 38px rgba(33,80,60,0.24);z-index:4">
                 <svg width="112" height="112" viewBox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    {{-- Both legends ride the same r=42 arc, so they sweep equal angles
+                         (163.2° vs 163.4°) and the separator dots land centred in the
+                         gaps. They also share one 42.2–48.4 band: the top text grows
+                         outward from its baseline, the bottom text is pushed out by dy
+                         so it grows inward to meet it. The wider letter-spacing on the
+                         bottom offsets its larger effective radius. --}}
+                    <defs>
+                        <path id="seal-top" d="M14,56 a42,42 0 1 1 84,0"/>
+                        <path id="seal-bot" d="M14,56 a42,42 0 0 0 84,0"/>
+                    </defs>
                     <circle cx="56" cy="56" r="55" fill="#2F8B3C"/>
                     <g class="vka-spin">
-                        <defs><path id="seal-top" d="M56,56 m-40,0 a40,40 0 1,1 80,0"/><path id="seal-bot" d="M16,56 a40,40 0 0,0 80,0"/></defs>
                         <text font-family="Manrope, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.6" fill="#FFFFFF"><textPath href="#seal-top" startOffset="50%" text-anchor="middle">NATURAL PRODUCT</textPath></text>
-                        <text font-family="Manrope, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.6" fill="#FFFFFF"><textPath href="#seal-bot" startOffset="50%" text-anchor="middle">PREMIUM QUALITY</textPath></text>
-                        <circle cx="16" cy="56" r="1.5" fill="#FFFFFF"/>
-                        <circle cx="96" cy="56" r="1.5" fill="#FFFFFF"/>
+                        <text font-family="Manrope, sans-serif" font-size="8.5" font-weight="700" letter-spacing="2.9" dy="6.2" fill="#FFFFFF"><textPath href="#seal-bot" startOffset="50%" text-anchor="middle">PREMIUM QUALITY</textPath></text>
+                        <circle cx="10.7" cy="56" r="1.6" fill="#FFFFFF"/>
+                        <circle cx="101.3" cy="56" r="1.6" fill="#FFFFFF"/>
                     </g>
-                    <text x="56" y="62" text-anchor="middle" font-family="Manrope, sans-serif" font-size="23" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">100%</text>
+                    {{-- y=64 sits the cap-height centre of the digits on the circle centre. --}}
+                    <text x="56" y="64" text-anchor="middle" font-family="Manrope, sans-serif" font-size="23" font-weight="800" letter-spacing="-0.5" fill="#FFFFFF">100%</text>
                 </svg>
             </div>
 

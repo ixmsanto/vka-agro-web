@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Medium;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -82,5 +83,33 @@ class MediaStore
     public static function url(?string $path): ?string
     {
         return $path ? '/uploads/'.ltrim($path, '/') : null;
+    }
+
+    /**
+     * Intrinsic [width, height] of an upload, or null if it is not a readable
+     * image. Lets a layout reserve the right box before the file loads.
+     *
+     * Cached forever on purpose: put() names every upload randomly, so a given
+     * path always refers to the same bytes and can never go stale.
+     *
+     * @return array{0:int,1:int}|null
+     */
+    public static function size(?string $path): ?array
+    {
+        if (! $path) {
+            return null;
+        }
+
+        return Cache::rememberForever('media.size.'.$path, function () use ($path) {
+            $file = public_path('uploads/'.ltrim($path, '/'));
+
+            if (! is_file($file)) {
+                return null;
+            }
+
+            $info = @getimagesize($file);
+
+            return $info ? [$info[0], $info[1]] : null;
+        });
     }
 }
