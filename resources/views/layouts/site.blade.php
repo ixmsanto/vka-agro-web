@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'VKA Agro Exports — Premium Coco Peat, Grow Bags & Husk Chips')</title>
+    <title>@yield('title', 'VKAAgroproducts Exports — Premium Coco Peat, Grow Bags & Husk Chips')</title>
     <meta name="description" content="@yield('description', 'Premium coco peat blocks, briquettes, grow bags and husk chips. Buffered, low-EC and batch-tested — manufactured in Pollachi, Tamil Nadu and exported to 40+ countries.')">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">

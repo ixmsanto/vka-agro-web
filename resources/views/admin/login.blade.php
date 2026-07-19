@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>Admin login · VKA Agro</title>
+    <title>Admin login · VKAAgroproducts</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
         <div class="vka-login-brand" style="position:relative;padding:clamp(36px,4vw,52px);background:linear-gradient(160deg,#21503C,#123C2D);color:#fff;flex-direction:column;justify-content:space-between;overflow:hidden">
             <div style="position:absolute;width:340px;height:340px;border-radius:50%;right:-120px;top:-120px;background:radial-gradient(closest-side,rgba(99,190,70,0.42),transparent 70%)"></div>
             <div style="position:relative;z-index:1">
-                <div style="font-family:'Newsreader',serif;font-size:30px;line-height:1">VKA<span style="font-style:italic;color:#63BE46">&nbsp;Agro</span></div>
+                <div style="font-family:'Newsreader',serif;font-size:30px;line-height:1">VKA<span style="font-style:italic;color:#63BE46">Agroproducts</span></div>
                 <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-top:8px">Content Management</div>
             </div>
             <div style="position:relative;z-index:1">

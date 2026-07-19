@@ -1,4 +1,4 @@
-/* VKA Agro — admin behaviour.
+/* VKAAgroproducts — admin behaviour.
    Field edits autosave (debounced). Images upload by click or drag-and-drop,
    mirroring the design's <image-slot>. Everything degrades to plain form posts
    if this file fails to load. */

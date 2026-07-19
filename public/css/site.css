@@ -1,4 +1,4 @@
-/* VKA Agro — public site.
+/* VKAAgroproducts — public site.
    Ported from the design's <helmet> block. Layout stays inline on the elements
    (as designed); this file owns what inline styles cannot express: keyframes,
    media queries and the empty-image-slot treatment. */

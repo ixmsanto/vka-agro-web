@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Shared-hosting front controller for VKA Agro.
+ * Shared-hosting front controller for VKAAgroproducts.
  *
  * The Laravel application lives OUTSIDE the web root (in ../vka-app), so that
  * only this file and the compiled assets under public_html are web-reachable.

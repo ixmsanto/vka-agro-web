@@ -62,14 +62,14 @@ class Setting extends Model
                 'subtitle' => 'High-quality coco peat blocks, briquettes and grow bags engineered for superior water retention, healthier roots and higher crop yields.',
             ],
             'video' => [
-                'badge' => 'Inside VKA Agro',
+                'badge' => 'Inside VKAAgroproducts',
                 'headingPre' => 'From coconut husk to ',
                 'headingAccent' => 'global container',
                 'subtitle' => 'Take a two-minute walk through our facility — washing, buffering, drying and pressing coir into export-grade coco peat.',
                 'caption' => 'Facility walkthrough · 2:14',
             ],
             'contact' => [
-                'address' => 'VKA Agro Exports, Pollachi, Tamil Nadu 642001, India',
+                'address' => 'VKAAgroproducts Exports, Pollachi, Tamil Nadu 642001, India',
                 'email' => 'export@vkaagro.com',
                 'phone' => '+91 98765 43210',
                 'intro' => "Tell us your crop, volumes and target specification — we'll reply within one business day with pricing and availability.",
