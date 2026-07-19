@@ -18,6 +18,10 @@
 
   /* ---------------- reveal on scroll ---------------- */
 
+  // Registers one [data-reveal] element with the scroll observer. Assigned by
+  // initReveals so rows uncovered later by "view more" can still animate in.
+  var addReveal = function () {};
+
   function initReveals() {
     var revealed = new WeakSet();
     var io = null;
@@ -38,7 +42,7 @@
       revealed.add(el);
     }
 
-    document.querySelectorAll('[data-reveal]').forEach(function (el) {
+    addReveal = function (el) {
       if (revealed.has(el)) return;
 
       var delay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) * 90;
@@ -54,6 +58,39 @@
       } else {
         io.observe(el);
       }
+    };
+
+    document.querySelectorAll('[data-reveal]').forEach(addReveal);
+  }
+
+  /* ---------------- progressive lists ("view more") ----------------
+     Everything is in the markup; items past the first batch are hidden by CSS
+     until asked for, so a long list costs nothing extra to load and search
+     engines still see the lot. A button reveals the group it names, which lets
+     the products and the gallery each run their own independently. */
+
+  function initMore() {
+    document.querySelectorAll('[data-more]').forEach(function (btn) {
+      var group = btn.getAttribute('data-more');
+      var step = parseInt(btn.getAttribute('data-step'), 10) || 3;
+      var count = btn.querySelector('[data-more-count]');
+      var hidden = '[data-more-item="' + group + '"]';
+
+      btn.addEventListener('click', function () {
+        var batch = Array.prototype.slice.call(document.querySelectorAll(hidden), 0, step);
+
+        batch.forEach(function (el) {
+          el.removeAttribute('data-more-item');
+          // Only now can it be measured, so hand it to the reveal observer.
+          // The gallery marks up the tile itself; the products their children.
+          if (el.hasAttribute('data-reveal')) addReveal(el);
+          el.querySelectorAll('[data-reveal]').forEach(addReveal);
+        });
+
+        var left = document.querySelectorAll(hidden).length;
+        if (!left) btn.parentElement.style.display = 'none';
+        else if (count) count.textContent = '(' + left + ')';
+      });
     });
   }
 
@@ -250,29 +287,9 @@
     var hero = document.getElementById('hero');
     var video = document.getElementById('video');
 
-    // Alternating product rows: image left/right on desktop, stacked on mobile.
-    // Stacked rows must stretch: the inline align-items:center would otherwise
-    // size the columns to max-content and let the 56ch copy overflow the page.
-    document.querySelectorAll('[data-prow]').forEach(function (row, i) {
-      var stacked = w < 860;
-      row.style.flexDirection = stacked ? 'column' : (i % 2 === 1 ? 'row-reverse' : 'row');
-      row.style.alignItems = stacked ? 'stretch' : 'center';
-    });
+    // Alternating product rows are pure CSS now — see [data-prow] in site.css.
 
-    // Bento gallery: 4-col -> 2-col -> 1-col, spans clamped per breakpoint.
-    var gallery = document.querySelector('[data-gallery]');
-    if (gallery) {
-      var gcols = w >= 1024 ? 4 : (w >= 620 ? 2 : 1);
-      gallery.style.gridTemplateColumns = 'repeat(' + gcols + ',1fr)';
-      gallery.style.gridAutoRows = (w >= 1024 ? 220 : (w >= 620 ? 190 : 156)) + 'px';
-
-      document.querySelectorAll('[data-gtile]').forEach(function (t) {
-        var c = parseInt(t.getAttribute('data-col'), 10) || 1;
-        var r = parseInt(t.getAttribute('data-row'), 10) || 1;
-        t.style.gridColumn = 'span ' + (gcols === 1 ? 1 : Math.min(c, gcols));
-        t.style.gridRow = 'span ' + r;
-      });
-    }
+    // The masonry gallery is pure CSS now — see [data-gallery] in site.css.
 
     // Footer grid: 4-col -> 2-col -> 1-col.
     var fgrid = document.querySelector('[data-fgrid]');
@@ -312,6 +329,7 @@
     initVideo();
     initGallery();
     initDrawer();
+    initMore();
     applyNav();
     applyTopBtn();
     applyResponsive();

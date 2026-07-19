@@ -1,3 +1,9 @@
+@php
+    // Rows shown before the visitor asks for more, and how many each press adds.
+    $initialRows = 3;
+    $moreStep = 3;
+@endphp
+
 <section id="products" style="padding:clamp(64px,9vw,120px) 0;scroll-margin-top:80px">
     <div style="max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
         <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px">
@@ -13,11 +19,11 @@
 
         <div style="display:flex;flex-direction:column;gap:clamp(48px,7vw,104px);margin-top:clamp(48px,6vw,80px)">
             @foreach ($products as $product)
-                <div data-prow style="display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,5vw,72px)">
-                    <div data-reveal="3" style="flex:1 1 min(380px,100%);position:relative;aspect-ratio:5 / 4;border-radius:28px;overflow:hidden;background:rgba(99,190,70,0.1);box-shadow:0 30px 70px rgba(33,80,60,0.14)">
+                <div data-prow @if ($loop->index >= $initialRows) data-more-item="products" @endif style="align-items:center;gap:clamp(28px,5vw,72px)">
+                    <div data-pimg data-reveal="3" style="position:relative;aspect-ratio:5 / 4;border-radius:28px;overflow:hidden;background:rgba(99,190,70,0.1);box-shadow:0 30px 70px rgba(33,80,60,0.14)">
                         <x-img-slot :src="\App\Support\MediaStore::url($product->image_path)" :placeholder="$product->image_placeholder" :alt="$product->title" fit="cover" />
                     </div>
-                    <div data-reveal="4" style="flex:1 1 min(380px,100%)">
+                    <div data-reveal="4">
                         <div style="display:flex;align-items:center;gap:12px">
                             <span style="font-family:'Newsreader',serif;font-size:22px;color:#63BE46">{{ $product->num }}</span>
                             <span style="height:1px;flex:0 0 34px;background:#CFE3CC"></span>
@@ -40,8 +46,13 @@
             @endforeach
         </div>
 
-        <div data-reveal="7" style="display:flex;justify-content:center;margin-top:clamp(40px,5vw,56px)">
-            <a href="#contact" class="vka-btn-primary" style="display:inline-flex;align-items:center;gap:11px;background:#2F8B3C;color:#FFFFFF;padding:17px 34px;border-radius:999px;font-size:15.5px;font-weight:600;box-shadow:0 14px 34px rgba(47,139,60,0.28)">Request full catalogue <span aria-hidden="true" style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);align-items:center;justify-content:center">→</span></a>
-        </div>
+        @if ($products->count() > $initialRows)
+            <div data-more-wrap style="margin-top:clamp(40px,5vw,56px)">
+                <button type="button" data-more="products" data-step="{{ $moreStep }}" class="vka-btn-primary" style="display:inline-flex;align-items:center;gap:11px;background:#2F8B3C;color:#FFFFFF;border:none;padding:17px 34px;border-radius:999px;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer;box-shadow:0 14px 34px rgba(47,139,60,0.28)">
+                    View more <span data-more-count style="font-weight:500;opacity:0.75">({{ $products->count() - $initialRows }})</span>
+                    <span aria-hidden="true" style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);align-items:center;justify-content:center">↓</span>
+                </button>
+            </div>
+        @endif
     </div>
 </section>

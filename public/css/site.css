@@ -85,6 +85,51 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
   .vka-mobile { display: inline-flex; }
 }
 
+/* ---- Alternating product rows. Grid rather than flex, and driven from here
+   rather than from JS: the photo cell needs a definite inline size for its
+   aspect-ratio to give it a height, which a flex-basis that swaps between the
+   main and cross axis when the row stacks cannot provide. ---- */
+/* display lives here, not inline, so the hide rule below can win over it. */
+[data-prow] { display: grid; grid-template-columns: minmax(0, 1fr); }
+
+@media (min-width: 860px) {
+  [data-prow] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Photo right on every second row; it leads on mobile regardless. */
+  [data-prow]:nth-of-type(even) > [data-pimg] { order: 2; }
+}
+
+/* ---- Masonry gallery. Multi-column rather than grid so each tile keeps its
+   picture's own proportions and the columns pack tight underneath — a grid
+   would have to force every tile to a shared row height and crop to fit.
+   Reading order runs down each column. ---- */
+[data-gallery] {
+  --gallery-gap: clamp(12px, 1.4vw, 18px);
+  /* Three, not four: balancing minimises total height, and with a handful of
+     tall tiles it will leave a fourth column empty however wide the screen,
+     which reads as a broken grid. Three fills reliably. */
+  column-count: 3;
+  column-gap: var(--gallery-gap);
+}
+
+[data-gtile] {
+  /* The margin is the row gap; column-gap only spaces the columns. */
+  margin-bottom: var(--gallery-gap);
+  -webkit-column-break-inside: avoid;
+  break-inside: avoid;
+}
+
+@media (max-width: 1023px) { [data-gallery] { column-count: 2; } }
+@media (max-width: 619px) { [data-gallery] { column-count: 1; } }
+
+/* ---- Progressive lists ("view more"). A hidden item names the group it
+   belongs to, and the button for that group reveals them a batch at a time.
+   Both rules sit behind .js: without a script to reveal them the extra items
+   stay visible, and a button that could not do anything never appears.
+   The attribute selector also outranks [data-prow]'s display. ---- */
+.js [data-more-item] { display: none; }
+[data-more-wrap] { display: none; }
+.js [data-more-wrap] { display: flex; justify-content: center; }
+
 /* ---- Mobile drawer ---- */
 #vka-drawer { display: none; }
 #vka-drawer.is-open { display: flex; }
@@ -111,6 +156,9 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 }
 
 .vka-slot--static { position: relative; }
+/* An unfilled slot has no picture to take its height from, so it borrows a
+   landscape box until someone uploads one. */
+.vka-slot--natural { position: static; aspect-ratio: 4 / 3; }
 .vka-slot svg { opacity: 0.5; flex: 0 0 auto; }
 .vka-slot span { font-size: 12.5px; font-weight: 600; line-height: 1.45; max-width: 30ch; }
 
@@ -125,6 +173,10 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 .vka-img--static { position: relative; }
 .vka-img--cover { object-fit: cover; }
 .vka-img--contain { object-fit: contain; }
+
+/* Height follows the picture instead of the box, so nothing is ever cropped
+   whatever shape gets uploaded — panoramic, portrait, square. */
+.vka-img--natural { position: static; width: 100%; height: auto; }
 
 /* ---- Reveal-on-scroll. Elements start hidden only when JS is present, so a
    no-JS visitor still sees the whole page. ---- */
