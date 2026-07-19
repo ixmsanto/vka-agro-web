@@ -44,9 +44,26 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 
 /* ---- Hover states the design expressed with style-hover="" ---- */
 .vka-link-muted:hover { color: #63BE46; }
-.vka-nav-link:hover { color: #123C2D; border-bottom-color: rgba(99,190,70,0.5); }
+/* The underline used to live on the link itself. It is now one shared bar that
+   slides between links (see initNavSpy), so hover only changes the colour. */
+.vka-nav-link:hover { color: #123C2D; }
 
-.vka-btn-primary { transition: background .3s ease, transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease; }
+.vka-btn-primary { position: relative; overflow: hidden; transition: background .3s ease, transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease; }
+/* A light sweep crosses the button on hover. Skewed so the leading edge is
+   diagonal, and parked well off to the left so it never shows at rest. */
+.vka-btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-18deg);
+  transition: left .75s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
+}
+.vka-btn-primary:hover::before { left: 165%; }
 .vka-btn-primary:hover { background: #24702F; color: #FFFFFF; transform: translateY(-3px); box-shadow: 0 22px 46px rgba(47,139,60,0.44); }
 
 .vka-btn-ghost { transition: border-color .3s ease, background .3s ease, transform .35s cubic-bezier(.16,1,.3,1), color .3s ease; }
@@ -68,6 +85,44 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 .vka-wa-btn:hover { color: #FFFFFF; transform: scale(1.09); box-shadow: 0 20px 44px rgba(37,211,102,0.55); }
 
 .vka-play:hover { transform: translate(-50%,-50%) scale(1.08); background: #FFFFFF; }
+
+/* ---- Hero: clearance for the fixed nav. The hero is the first thing on the
+   page, so unless it reserves the nav's height its content sits underneath it
+   — which is what put the product photo behind the phone number and the quote
+   button. Kept here rather than inline because the two differ by exactly one
+   thing: the dark topbar, which only exists above 1080px.
+
+   Height is 38px of topbar (the inner row, not the 44px max-height the
+   collapse animates against) plus the main bar, and matches nav.blade.php. ---- */
+#hero { padding-top: calc(38px + clamp(66px, 7vw, 80px) + clamp(6px, 1vw, 18px)); }
+
+@media (max-width: 1079px) {
+  #hero { padding-top: calc(clamp(66px, 7vw, 80px) + clamp(8px, 2vw, 20px)); }
+}
+
+/* ---- Hero: the pieces that float around the product picture.
+
+   They are positioned against the stage — the picture's own box — and overlap
+   its edges, so how far they may stick out depends on how much room there is
+   beside the picture, which is a breakpoint question an inline clamp() cannot
+   answer. Above 1240px the column is wide enough for them to hang outside the
+   frame. Below that the copy column is close enough that a card reaching out
+   to the left lands on the paragraph, so they tuck back onto the image. ---- */
+[data-hero-spec] { position: absolute; top: 26%; left: -54px; width: min(228px, 62%); z-index: 4; }
+[data-hero-stats] { position: absolute; right: -56px; bottom: 96px; z-index: 4; }
+[data-hero-seal] { position: absolute; top: 34px; right: -32px; z-index: 4; }
+
+@media (max-width: 1239px) {
+  [data-hero-spec] { left: 12px; }
+  [data-hero-stats] { right: 12px; bottom: 78px; }
+  [data-hero-seal] { top: 20px; right: -16px; }
+}
+
+@media (max-width: 859px) {
+  [data-hero-spec] { top: 20%; left: 10px; }
+  [data-hero-stats] { right: 10px; bottom: 64px; }
+  [data-hero-seal] { top: 12px; right: -10px; }
+}
 
 /* ---- Responsive visibility. The design drove these from JS state:
    isMobile = width < 1080, isWide = width >= 1240. ---- */
@@ -214,3 +269,223 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 /* ---- Reveal-on-scroll. Elements start hidden only when JS is present, so a
    no-JS visitor still sees the whole page. ---- */
 .js [data-reveal] { opacity: 0; transform: translateY(26px); }
+
+/* ============================================================
+   Motion layer
+   Everything below is opt-in from the markup: an element asks for a
+   behaviour with an attribute and site.js wires it up. Nothing here
+   runs without .js on the root, so a no-JS visitor sees a static page
+   with every element in its final position.
+   ============================================================ */
+
+/* ---- Reveal variants. The base rule above is the default ("rise"); these
+   swap in a different starting pose for the same observer. ---- */
+.js [data-reveal][data-fx="left"] { transform: translateX(-44px); }
+.js [data-reveal][data-fx="right"] { transform: translateX(44px); }
+.js [data-reveal][data-fx="scale"] { transform: translateY(20px) scale(0.94); }
+.js [data-reveal][data-fx="blur"] { transform: translateY(18px); filter: blur(10px); }
+
+/* Mask wipe, for photographs. The picture uncovers from the bottom while it
+   settles back from an over-scale, so it reads as coming to rest rather than
+   simply appearing. The frame stays put and fully opaque throughout — the
+   wipe is the whole effect.
+
+   The clip is on the picture, never on the frame around it: clip-path clips
+   box-shadow along with everything else, and every frame that uses this has
+   one it would lose. Clipping the <img> is safe because it has no shadow of
+   its own, so the inset can stay on it once the wipe has finished. */
+.js [data-reveal][data-fx="mask"] { opacity: 1; transform: none; }
+
+.js [data-fx="mask"] .vka-img,
+.js [data-fx="mask"] .vka-slot {
+  clip-path: inset(0 0 100% 0);
+  transform: scale(1.16);
+  transition: transform 1.5s cubic-bezier(.16,1,.3,1), clip-path 1.2s cubic-bezier(.16,1,.3,1);
+}
+
+/* ---- Word-by-word headings. site.js wraps each word in .vka-w > .vka-wi and
+   stages the delays; the outer span is the clipping window the inner one
+   rises through.
+
+   The padding/negative-margin pair gives descenders and the italic's overhang
+   somewhere to live: without it `overflow:hidden` would shear the tail off a
+   'g' and the right edge off every italic word. ---- */
+.js [data-split] { opacity: 0; }
+.js [data-split].is-split { opacity: 1; }
+
+.vka-w {
+  display: inline-block;
+  vertical-align: top;
+  overflow: hidden;
+  padding: 0.02em 0.08em 0.16em 0;
+  margin: -0.02em -0.08em -0.16em 0;
+}
+
+.vka-wi { display: inline-block; will-change: transform; }
+
+.js .is-split .vka-wi {
+  transform: translateY(115%);
+  opacity: 0;
+  transition: transform 1s cubic-bezier(.16,1,.3,1), opacity .8s cubic-bezier(.16,1,.3,1);
+}
+
+.js .is-split.is-in .vka-wi { transform: translateY(0); opacity: 1; }
+
+/* ---- Magnetic buttons. site.js writes the cursor offset into --mx/--my
+   rather than into `transform` directly, so the hover lift below can compose
+   with it instead of being overwritten. Each :hover rule has to name .vka-mag
+   to outrank the plain :hover transforms further up this file. ---- */
+.vka-mag { transform: translate3d(var(--mx,0px), var(--my,0px), 0); }
+
+.vka-btn-primary.vka-mag:hover,
+.vka-btn-ghost.vka-mag:hover { transform: translate3d(var(--mx,0px), calc(var(--my,0px) - 3px), 0); }
+
+.vka-btn-send.vka-mag:hover { transform: translate3d(var(--mx,0px), calc(var(--my,0px) - 2px), 0); }
+
+/* ---- Card tilt. The rotation is written inline by site.js; this owns the
+   easing either side of it. While the cursor is over the card the transition
+   is short enough to track it, and long on the way back out so the card
+   settles rather than snaps. ---- */
+.vka-tilt {
+  position: relative;
+  transition: transform .6s cubic-bezier(.16,1,.3,1), box-shadow .5s ease;
+  will-change: transform;
+}
+
+.vka-tilt.is-tilting { transition: transform .14s ease-out, box-shadow .3s ease; }
+.vka-tilt:hover { box-shadow: 0 34px 74px rgba(33,80,60,0.16); }
+
+/* A soft green glow that follows the cursor across the card. */
+.vka-tilt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .45s ease;
+  background: radial-gradient(320px circle at var(--px,50%) var(--py,50%), rgba(99,190,70,0.16), transparent 62%);
+}
+
+.vka-tilt:hover::after { opacity: 1; }
+
+/* The icon tile inside a tilting card leans in with it. */
+[data-ico] { transition: transform .5s cubic-bezier(.16,1,.3,1), background .35s ease, color .35s ease; }
+.vka-tilt:hover [data-ico] { transform: translateY(-4px) rotate(-5deg); background: #63BE46; color: #FFFFFF; }
+
+/* ---- Counters. Tabular figures so the number cannot change width as it
+   counts and shove the label beside it around. ---- */
+[data-count] { font-variant-numeric: tabular-nums; }
+
+/* ---- Nav: the sliding active-section indicator. ---- */
+#vka-navlinks { position: relative; }
+
+#vka-nav-ind {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 2px;
+  background: #63BE46;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .55s cubic-bezier(.16,1,.3,1), width .55s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+}
+
+/* ---- Scroll progress. Sits above the nav's own z-index so it stays visible
+   over the dark topbar. ---- */
+#vka-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 120;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #63BE46, #2F8B3C);
+  pointer-events: none;
+}
+
+/* ---- Gallery caption lift on hover, paired with the existing image zoom.
+   The caption stays legible at rest — hiding it until hover would put it out
+   of reach on touch. ---- */
+[data-gcap] { transition: transform .55s cubic-bezier(.16,1,.3,1); }
+[data-gtile]:hover [data-gcap] { transform: translateY(-4px); }
+
+[data-gscrim] { transition: opacity .5s ease; }
+[data-gtile]:hover [data-gscrim] { opacity: 0.75; }
+
+/* ---- Video: a ring breathing out from the play button. ---- */
+.vka-play::after {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  animation: vkaWaRing 2.8s cubic-bezier(.2,.6,.4,1) infinite;
+  pointer-events: none;
+}
+
+/* ---- Decorative marks (<x-deco>). Ornament only: they sit behind the content,
+   never take a click, and are hidden from assistive tech at the markup.
+
+   z-index 0 rather than a negative one — a negative index would drop them
+   behind the section's own background and make them invisible. ---- */
+.vka-deco {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  line-height: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vka-deco svg { display: block; }
+
+/* The margins these live in collapse when the columns stack, so the marks
+   that decorate those margins go with them. */
+@media (max-width: 859px) {
+  .vka-deco--wide { display: none; }
+}
+
+@keyframes vkaDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  33% { transform: translate3d(7px, -12px, 0) rotate(5deg); }
+  66% { transform: translate3d(-6px, -6px, 0) rotate(-4deg); }
+}
+
+.vka-deco-drift { animation: vkaDrift 16s ease-in-out infinite; }
+.vka-deco-spin { animation: vkaSpin 38s linear infinite; }
+
+/* ---- Reduced motion. The parallax already opted out in JS; this covers
+   everything else, including the poses elements are parked in before their
+   reveal fires — without the overrides below they would simply never
+   arrive. ---- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .js [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
+  }
+
+  .js [data-fx="mask"] .vka-img,
+  .js [data-fx="mask"] .vka-slot { transform: none !important; clip-path: none !important; }
+
+  .js [data-split] { opacity: 1 !important; }
+  .js .is-split .vka-wi { transform: none !important; opacity: 1 !important; }
+
+  .vka-tilt::after { display: none; }
+  #vka-progress { display: none; }
+}

@@ -42,13 +42,13 @@
             @endif
         </a>
 
-        <div class="vka-desktop" style="align-items:center;gap:clamp(14px,1.8vw,30px);flex:1 1 auto;justify-content:center">
+        {{-- The active link used to be hardcoded to the first one. site.js now
+             works it out from the scroll position and slides a single shared
+             underline between them, so every link is authored identically and
+             the one below is only the no-JS default. --}}
+        <div id="vka-navlinks" class="vka-desktop" style="align-items:center;gap:clamp(14px,1.8vw,30px);flex:1 1 auto;justify-content:center">
             @foreach ($links as $href => $label)
-                @if ($loop->first)
-                    <a href="{{ $href }}" style="font-size:15px;font-weight:700;color:#123C2D;padding:4px 2px;border-bottom:2px solid #63BE46;transition:color .25s ease">{{ $label }}</a>
-                @else
-                    <a href="{{ $href }}" class="vka-nav-link" style="font-size:15px;font-weight:500;color:#5E6862;padding:4px 2px;border-bottom:2px solid transparent;transition:color .25s ease, border-color .25s ease">{{ $label }}</a>
-                @endif
+                <a href="{{ $href }}" data-navlink class="vka-nav-link" style="font-size:15px;font-weight:{{ $loop->first ? 700 : 500 }};color:{{ $loop->first ? '#123C2D' : '#5E6862' }};padding:4px 2px 6px;transition:color .25s ease">{{ $label }}</a>
             @endforeach
         </div>
 

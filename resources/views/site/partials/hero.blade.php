@@ -15,8 +15,12 @@
     ];
 @endphp
 
-<section id="hero" style="position:relative;background:radial-gradient(1200px 800px at 88% -10%, rgba(99,190,70,0.14), transparent 55%), radial-gradient(900px 700px at 6% 4%, rgba(255,255,255,0.9), transparent 60%), #FCFBF7;padding:64px 0 clamp(96px,10vw,150px);box-sizing:border-box;overflow:visible">
-    <div style="max-width:1460px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(24px,2.6vw,48px);min-height:min(660px,86vh);padding:clamp(18px,2.6vw,40px) clamp(24px,5vw,68px) 0">
+<section id="hero" style="position:relative;background:radial-gradient(1200px 800px at 88% -10%, rgba(99,190,70,0.14), transparent 55%), radial-gradient(900px 700px at 6% 4%, rgba(255,255,255,0.9), transparent 60%), #FCFBF7;padding-bottom:clamp(96px,10vw,150px);box-sizing:border-box;overflow:visible">
+    {{-- The hero already carries a lot, so it gets the lightest scattering. --}}
+    <x-deco shape="sparkle" size="16" pos="top:20%;left:3%" opacity="0.42" motion="float" wide />
+    <x-deco shape="dots" size="38" pos="bottom:22%;left:2%" opacity="0.23" motion="drift" delay="1.8s" wide />
+
+    <div style="max-width:1460px;margin:0 auto;position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(24px,2.6vw,48px);min-height:min(660px,86vh);padding:clamp(18px,2.6vw,40px) clamp(24px,5vw,68px) 0">
 
         <div style="flex:1 1 400px;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;z-index:2">
             <div data-reveal="1" style="display:inline-flex;align-self:flex-start;align-items:center;gap:10px;background:rgba(255,255,255,0.85);border:1px solid #E1EFDD;border-radius:999px;padding:9px 17px 9px 12px;font-size:12px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:#2F8B3C;box-shadow:0 6px 20px rgba(33,80,60,0.07);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
@@ -24,7 +28,9 @@
                 {{ $hero['badge'] }}
             </div>
 
-            <h1 data-reveal="2" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(46px,5.2vw,74px);line-height:1.02;letter-spacing:-0.02em;margin:16px 0 0;color:#123C2D">
+            {{-- data-split, not data-reveal: site.js wraps each word in its own
+                 clipping window so the line assembles itself. --}}
+            <h1 data-split="2" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(46px,5.2vw,74px);line-height:1.02;letter-spacing:-0.02em;margin:16px 0 0;color:#123C2D">
                 {{ $hero['titleLine1'] }}<br>
                 <span style="font-style:italic;color:#63BE46">{{ $hero['titleAccent'] }}</span><br>
                 {{ $hero['titleLine3'] }}
@@ -52,27 +58,46 @@
             <div style="position:absolute;width:94%;height:90%;right:1%;top:5%;background:radial-gradient(closest-side at 55% 46%, rgba(255,210,128,0.5), rgba(255,210,128,0.2) 36%, rgba(99,190,70,0.16) 60%, transparent 78%);filter:blur(28px);z-index:0;pointer-events:none"></div>
             <div style="position:absolute;width:58%;height:52%;right:9%;bottom:3%;background:radial-gradient(closest-side, rgba(99,190,70,0.24), transparent 72%);filter:blur(34px);z-index:0;pointer-events:none"></div>
 
-            {{-- product slideshow — overflows freely, drop-shadow only, no card --}}
-            {{-- At 1080/1350 the height is 1.25x the width, so this cap is what
-                 set the hero's height: 660px wide meant 825px tall. --}}
-            <div data-reveal="2" data-parallax data-depth="0.5" style="position:relative;width:100%;max-width:545px;aspect-ratio:1080 / 1350;z-index:2;filter:drop-shadow(0 48px 46px rgba(33,80,60,0.26)) drop-shadow(0 14px 22px rgba(33,80,60,0.14))">
-                <div class="vka-float" style="position:absolute;inset:0">
+            {{-- The stage is exactly the picture's box, and everything that floats
+                 around the product hangs off it rather than off the column.
+
+                 The column is up to 130px wider than the picture — it takes the
+                 row's spare width, the picture is capped at 545px and centred in
+                 it — so anything pinned to the column's edge landed that far
+                 clear of the image. That is what stranded the seal out in the
+                 page background beside the photo.
+
+                 At 1080/1350 the height is 1.25x the width, so this cap is also
+                 what sets the hero's height: 660px wide would mean 825px tall. --}}
+            <div style="position:relative;width:100%;max-width:545px;aspect-ratio:1080 / 1350;z-index:2">
+
+                {{-- The rounded frame is on the floating layer, not on this one:
+                     the drop-shadow needs to read the rounded alpha, and clipping
+                     on the outer box would crop the float's own travel instead of
+                     riding along with it. --}}
+                <div data-reveal="2" data-parallax data-depth="0.5" style="position:absolute;inset:0;filter:drop-shadow(0 48px 46px rgba(33,80,60,0.26)) drop-shadow(0 14px 22px rgba(33,80,60,0.14))">
+                    <div class="vka-float" style="position:absolute;inset:0;border-radius:clamp(18px,2.2vw,30px);overflow:hidden">
+                        @foreach ($slides as $i => $slide)
+                            <div data-slide="{{ $i }}" style="position:absolute;inset:0;opacity:{{ $i === 0 ? 1 : 0 }};transition:opacity 1s cubic-bezier(.4,0,.2,1)">
+                                <x-img-slot :src="\App\Models\Medium::url($slide['slot'])" :placeholder="$slide['placeholder']" fit="contain" />
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Inside the frame now, so the dots need a surface of their own
+                     to stay legible over whatever photograph sits behind them. --}}
+                <div style="position:absolute;bottom:clamp(12px,1.6vw,20px);left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:9px;z-index:5;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.7);border-radius:999px;padding:8px 13px;box-shadow:0 8px 24px rgba(33,80,60,0.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)">
                     @foreach ($slides as $i => $slide)
-                        <div data-slide="{{ $i }}" style="position:absolute;inset:0;opacity:{{ $i === 0 ? 1 : 0 }};transition:opacity 1s cubic-bezier(.4,0,.2,1)">
-                            <x-img-slot :src="\App\Models\Medium::url($slide['slot'])" :placeholder="$slide['placeholder']" fit="contain" />
-                        </div>
+                        <button type="button" data-dot="{{ $i }}" aria-label="Slide {{ $i + 1 }}" style="width:{{ $i === 0 ? 26 : 9 }}px;height:9px;padding:0;border:none;border-radius:999px;background:{{ $i === 0 ? '#2F8B3C' : 'rgba(33,80,60,0.25)' }};cursor:pointer;transition:width .4s ease, background .4s ease"></button>
                     @endforeach
                 </div>
-            </div>
 
-            <div style="position:absolute;bottom:clamp(-2px,1vw,14px);left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:5">
-                @foreach ($slides as $i => $slide)
-                    <button type="button" data-dot="{{ $i }}" aria-label="Slide {{ $i + 1 }}" style="width:{{ $i === 0 ? 26 : 9 }}px;height:9px;padding:0;border:none;border-radius:999px;background:{{ $i === 0 ? '#2F8B3C' : 'rgba(33,80,60,0.25)' }};cursor:pointer;transition:width .4s ease, background .4s ease"></button>
-                @endforeach
-            </div>
-
-            {{-- rotating organic seal --}}
-            <div data-reveal="3" data-parallax data-depth="1.7" style="position:absolute;top:clamp(4px,3vw,46px);right:clamp(0px,2vw,30px);border-radius:50%;box-shadow:0 0 0 8px rgba(252,251,247,0.4), 0 18px 38px rgba(33,80,60,0.24);z-index:4">
+                {{-- Rotating organic seal, straddling the frame's top-right
+                     corner. The negative offset is measured from the picture, so
+                     it overlaps the edge by a fixed amount however wide the
+                     column around it happens to be. --}}
+                <div data-hero-seal data-reveal="3" data-parallax data-depth="1.7" style="border-radius:50%;box-shadow:0 0 0 8px rgba(252,251,247,0.4), 0 18px 38px rgba(33,80,60,0.24)">
                 <svg width="112" height="112" viewBox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     {{-- Both legends ride the same r=42 arc, so they sweep equal angles
                          (163.2° vs 163.4°) and the separator dots land centred in the
@@ -96,8 +121,8 @@
                 </svg>
             </div>
 
-            {{-- floating glass card: product spec --}}
-            <div data-reveal="4" data-parallax data-depth="2.4" style="position:absolute;top:28%;left:clamp(-14px,-2vw,4px);width:min(228px,56%);background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 18px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
+                {{-- floating glass card: product spec --}}
+                <div data-hero-spec data-reveal="4" data-parallax data-depth="2.4" style="background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 18px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
                 <div style="display:flex;align-items:center;gap:10px">
                     <span style="width:36px;height:36px;border-radius:10px;background:#EDF8EC;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;color:#2F8B3C"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>
                     <span style="font-size:14.5px;font-weight:700;color:#123C2D;line-height:1.15">5KG Coco Peat<br>Block</span>
@@ -107,17 +132,19 @@
                     @foreach (['Expands to 75 Litres', 'Buffered', 'Low EC < 0.5'] as $point)
                         <span style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:#2E4A3C"><span style="width:16px;height:16px;border-radius:50%;background:#63BE46;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span>{{ $point }}</span>
                     @endforeach
+                    </div>
                 </div>
-            </div>
 
-            {{-- floating glass card: export stats --}}
-            <div data-reveal="5" data-parallax data-depth="2.9" style="position:absolute;bottom:clamp(6px,4vw,52px);right:clamp(-14px,-2vw,2px);background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 20px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
+                {{-- floating glass card: export stats --}}
+                <div data-hero-stats data-reveal="5" data-parallax data-depth="2.9" style="background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.8);border-radius:18px;padding:16px 20px;box-shadow:0 24px 52px rgba(33,80,60,0.2);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);z-index:4">
                 <div style="display:flex;align-items:center;gap:18px">
-                    <div><div style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">40+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Countries</div></div>
+                    <div><div data-count style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">40+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Countries</div></div>
                     <div style="width:1px;height:34px;background:rgba(33,80,60,0.12)"></div>
-                    <div><div style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">50k+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Tons exported</div></div>
+                    <div><div data-count style="font-family:'Newsreader',serif;font-size:28px;line-height:1;color:#2F8B3C">50k+</div><div style="font-size:11.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">Tons exported</div></div>
                 </div>
                 <div style="display:inline-flex;align-items:center;gap:7px;margin-top:13px;background:#EDF8EC;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#2F8B3C"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>Premium Export Quality</div>
+                </div>
+
             </div>
 
         </div>

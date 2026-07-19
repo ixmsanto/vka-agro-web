@@ -8,15 +8,20 @@
     $stats = [['40+', 'Countries served'], ['50k+', 'Tons exported'], ['ISO', '9001:2015 certified']];
 @endphp
 
-<section id="about" style="padding:clamp(44px,6vw,80px) 0;scroll-margin-top:80px">
-    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,3.4vw,60px)">
+<section id="about" style="position:relative;padding:clamp(44px,6vw,80px) 0;scroll-margin-top:80px">
+    <x-deco shape="sprout" size="34" pos="top:9%;left:3%" opacity="0.36" motion="drift" wide />
+    <x-deco shape="arc" size="72" pos="bottom:6%;left:1.5%" opacity="0.21" motion="float-slow" delay="1.6s" wide />
+    <x-deco shape="sparkle" size="18" pos="top:22%;right:6%" opacity="0.38" motion="drift" delay="0.8s" wide />
+    <x-deco shape="dots" size="40" pos="bottom:16%;right:3%" opacity="0.25" motion="float" delay="2.2s" wide />
+
+    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(20px,4vw,48px);position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,3.4vw,60px)">
 
         <div data-about-photo style="flex:1 1 min(420px,100%);position:relative;order:2">
-            <div data-reveal="1" style="position:relative;aspect-ratio:4 / 5;border-radius:20px;overflow:hidden;background:rgba(99,190,70,0.12);box-shadow:0 22px 54px rgba(33,80,60,0.17)">
+            <div data-reveal="1" data-fx="mask" style="position:relative;aspect-ratio:4 / 5;border-radius:20px;overflow:hidden;background:rgba(99,190,70,0.12);box-shadow:0 22px 54px rgba(33,80,60,0.17)">
                 <x-img-slot :src="\App\Models\Medium::url('about-photo')" placeholder="Facility / plantation photo (portrait 4:5) — team, coir processing or coconut grove" fit="cover" />
             </div>
             <div data-reveal="2" style="position:absolute;left:clamp(-8px,-1vw,0px);bottom:clamp(-18px,-2vw,-24px);background:#FFFFFF;border:1px solid #EEF3EC;border-radius:20px;padding:18px 22px;box-shadow:0 22px 50px rgba(33,80,60,0.16);display:flex;align-items:center;gap:16px">
-                <div style="font-family:'Newsreader',serif;font-size:clamp(34px,4vw,46px);line-height:1;color:#2F8B3C">15+</div>
+                <div data-count style="font-family:'Newsreader',serif;font-size:clamp(34px,4vw,46px);line-height:1;color:#2F8B3C">15+</div>
                 <div style="font-size:13px;font-weight:600;line-height:1.35;color:#5E6862">Years crafting<br>export-grade coir</div>
             </div>
         </div>
@@ -26,7 +31,7 @@
                 <span class="vka-pulse-dot" style="width:8px;height:8px;border-radius:50%;background:#63BE46"></span>
                 About VKA Agro
             </div>
-            <h2 data-reveal="1" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(30px,3.6vw,48px);line-height:1.06;letter-spacing:-0.015em;margin:14px 0 0;color:#123C2D">Rooted in Pollachi, <span style="font-style:italic;color:#63BE46">shipped worldwide.</span></h2>
+            <h2 data-split="1" style="font-family:'Newsreader',serif;font-weight:400;font-size:clamp(30px,3.6vw,48px);line-height:1.06;letter-spacing:-0.015em;margin:14px 0 0;color:#123C2D">Rooted in Pollachi, <span style="font-style:italic;color:#63BE46">shipped worldwide.</span></h2>
             <p data-reveal="2" style="font-size:clamp(14.5px,1vw,15.5px);line-height:1.62;color:#5E6862;margin:14px 0 0;max-width:52ch">From the coconut belt of Tamil Nadu, VKA Agro turns raw coir into precision-buffered coco peat, grow bags and husk chips. Every batch is washed, aged and tested for EC and pH before it leaves our floor — so growers from Europe to the Gulf plant with confidence.</p>
 
             <div data-reveal="3" style="display:flex;flex-direction:column;gap:11px;margin-top:20px;max-width:520px">
@@ -40,7 +45,9 @@
 
             <div data-reveal="4" style="display:flex;flex-wrap:wrap;gap:clamp(22px,3vw,40px);margin-top:24px;padding-top:20px;border-top:1px solid rgba(33,80,60,0.12)">
                 @foreach ($stats as [$value, $label])
-                    <div><div style="font-family:'Newsreader',serif;font-size:clamp(26px,3vw,38px);line-height:1;color:#2F8B3C">{{ $value }}</div><div style="font-size:12.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">{{ $label }}</div></div>
+                    {{-- data-count skips a value with no figure in it, so the
+                         "ISO" stat is left alone without a special case. --}}
+                    <div><div data-count style="font-family:'Newsreader',serif;font-size:clamp(26px,3vw,38px);line-height:1;color:#2F8B3C">{{ $value }}</div><div style="font-size:12.5px;font-weight:600;letter-spacing:0.04em;color:#7A857E;margin-top:4px">{{ $label }}</div></div>
                 @endforeach
             </div>
         </div>

@@ -10,20 +10,59 @@
   document.documentElement.classList.add('js');
 
   var MOBILE = 1080;
+  var EASE = 'cubic-bezier(.16,1,.3,1)';
+  var STAGGER = 90;
+
+  // Every motion module checks this. The CSS has its own reduced-motion block
+  // for the poses elements are parked in; this is for the behaviour that only
+  // exists in script and so has nothing for that block to override.
+  var REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   function ready(fn) {
     if (document.readyState !== 'loading') fn();
     else document.addEventListener('DOMContentLoaded', fn);
   }
 
-  /* ---------------- reveal on scroll ---------------- */
+  // Fires fn when el first enters the viewport, or straight away if it is
+  // already on screen. Falls back to running immediately without an observer.
+  function whenSeen(el, fn, threshold) {
+    if (!('IntersectionObserver' in window)) { fn(); return; }
+
+    var r = el.getBoundingClientRect();
+    if (r.top < (window.innerHeight || 0) && r.bottom > 0) {
+      requestAnimationFrame(fn);
+      return;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        fn();
+      });
+    }, { threshold: threshold || 0.12, rootMargin: '0px 0px -50px 0px' });
+
+    io.observe(el);
+  }
+
+  /* ---------------- reveal on scroll ----------------
+     One observer, several poses. An element names the pose it starts from with
+     data-fx (rise is the default) and its place in the stagger with the value
+     of data-reveal; the CSS owns the starting poses, this owns the timing and
+     the trip back to rest. */
 
   // Registers one [data-reveal] element with the scroll observer. Assigned by
   // initReveals so rows uncovered later by "view more" can still animate in.
   var addReveal = function () {};
 
+  // Re-checks everything still waiting and reveals whatever has since come into
+  // view. Assigned by initReveals; called again once images and fonts have
+  // settled, because the layout they change is the layout addReveal measured.
+  var sweepReveals = function () {};
+
   function initReveals() {
     var revealed = new WeakSet();
+    var pending = [];
     var io = null;
 
     if ('IntersectionObserver' in window) {
@@ -37,30 +76,337 @@
     }
 
     function show(el) {
+      // Both the observer and the on-load measurement can reach the same
+      // element, and the second one through would restart its settle timer.
+      if (revealed.has(el)) return;
+      revealed.add(el);
+
+      var fx = el.getAttribute('data-fx');
+      var delay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) * STAGGER;
+
       el.style.opacity = '1';
       el.style.transform = 'none';
-      revealed.add(el);
+
+      // Only ever cleared for the variant that starts blurred: the hero
+      // slideshow declares a drop-shadow filter inline and also reveals, and
+      // clearing it unconditionally would throw that shadow away.
+      if (fx === 'blur') el.style.filter = 'none';
+
+      // The picture inside a mask wipes up from its bottom edge and settles
+      // back from its over-scale. It carries the stagger itself, since the
+      // element around it has nothing left to animate.
+      if (fx === 'mask') {
+        var inner = el.querySelector('.vka-img, .vka-slot');
+        if (inner) {
+          inner.style.transitionDelay = delay + 'ms';
+          inner.style.clipPath = 'inset(0 0 0 0)';
+          inner.style.transform = 'none';
+        }
+      }
+
+      // Hand the element back to the stylesheet once it has arrived. Until
+      // this runs the inline transition set below outranks every hover
+      // transition the element has, so a card would ease its hover over .9s
+      // instead of the .4s its own rule asks for.
+      setTimeout(function () { el.style.transition = ''; }, delay + 1600);
     }
 
     addReveal = function (el) {
       if (revealed.has(el)) return;
 
-      var delay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) * 90;
-      var ease = 'cubic-bezier(.16,1,.3,1)';
-      el.style.transition = 'opacity .9s ' + ease + ' ' + delay + 'ms, transform .9s ' + ease + ' ' + delay + 'ms';
+      if (REDUCED) { revealed.add(el); return; }
+
+      var delay = (parseInt(el.getAttribute('data-reveal'), 10) || 0) * STAGGER;
+      el.style.transition =
+        'opacity .9s ' + EASE + ' ' + delay + 'ms' +
+        ', transform .9s ' + EASE + ' ' + delay + 'ms' +
+        ', filter .9s ' + EASE + ' ' + delay + 'ms';
 
       if (!io) { show(el); return; }
 
-      // Already above the fold on load? Reveal now instead of waiting for a scroll.
+      // Already above the fold on load? Reveal now instead of waiting for a
+      // scroll. This measures a layout that images and fonts have not settled
+      // yet, so anything judged out of view here is kept on the pending list
+      // and measured again by sweepReveals once they have.
+      pending.push(el);
+      io.observe(el);
+
       var r = el.getBoundingClientRect();
       if (r.top < (window.innerHeight || 0) && r.bottom > 0) {
         requestAnimationFrame(function () { show(el); });
-      } else {
-        io.observe(el);
       }
     };
 
+    // The observer is the normal path and handles everything scrolled into
+    // view. This is the backstop for an element that was measured as off-screen
+    // during load but ended up on-screen once the page settled — without it a
+    // missed notification leaves that element at opacity 0 permanently.
+    sweepReveals = function () {
+      if (!pending.length) return;
+
+      pending = pending.filter(function (el) {
+        if (revealed.has(el)) return false;
+
+        var r = el.getBoundingClientRect();
+        if (r.top < (window.innerHeight || 0) && r.bottom > 0) {
+          show(el);
+          if (io) io.unobserve(el);
+          return false;
+        }
+
+        return true;
+      });
+    };
+
     document.querySelectorAll('[data-reveal]').forEach(addReveal);
+  }
+
+  /* ---------------- word-by-word headings ----------------
+     Each word gets a clipping window it rises through, so the line assembles
+     itself instead of fading in whole. The split walks text nodes rather than
+     rewriting innerHTML, which keeps the italic accent span and the <br>s in
+     the markup intact. */
+
+  function splitWords(root) {
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    var nodes = [];
+    var n;
+
+    while ((n = walker.nextNode())) nodes.push(n);
+
+    nodes.forEach(function (textNode) {
+      if (!textNode.nodeValue.trim()) return;
+
+      var frag = document.createDocumentFragment();
+
+      // Capturing split: the whitespace runs come back too, so the gaps
+      // between words survive as real text nodes and can still line-break.
+      textNode.nodeValue.split(/(\s+)/).forEach(function (part) {
+        if (!part) return;
+
+        if (!part.trim()) {
+          frag.appendChild(document.createTextNode(part));
+          return;
+        }
+
+        var outer = document.createElement('span');
+        outer.className = 'vka-w';
+
+        var inner = document.createElement('span');
+        inner.className = 'vka-wi';
+        inner.textContent = part;
+
+        outer.appendChild(inner);
+        frag.appendChild(outer);
+      });
+
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+
+    return root.querySelectorAll('.vka-wi');
+  }
+
+  function initSplit() {
+    var heads = document.querySelectorAll('[data-split]');
+    if (!heads.length) return;
+
+    // Leave the heading as authored; the CSS reveals it.
+    if (REDUCED) return;
+
+    heads.forEach(function (head) {
+      var base = (parseInt(head.getAttribute('data-split'), 10) || 0) * STAGGER;
+
+      splitWords(head).forEach(function (word, i) {
+        word.style.transitionDelay = (base + i * 55) + 'ms';
+      });
+
+      head.classList.add('is-split');
+
+      whenSeen(head, function () { head.classList.add('is-in'); }, 0.2);
+    });
+  }
+
+  /* ---------------- counters ----------------
+     The element's own text is the target, so the markup stays readable and a
+     visitor without script (or with reduced motion) sees the final figure. */
+
+  function initCounters() {
+    if (REDUCED) return;
+
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      // A leading symbol, the figure, then whatever trails it: "50k+" counts
+      // to 50 and keeps the "k+", "ISO" has no figure at all and is skipped.
+      var parts = /^(\D*)([\d.]+)(.*)$/.exec(el.textContent.trim());
+      if (!parts) return;
+
+      var pre = parts[1];
+      var target = parseFloat(parts[2]);
+      var post = parts[3];
+      var decimals = (parts[2].split('.')[1] || '').length;
+
+      if (!isFinite(target)) return;
+
+      el.textContent = pre + (0).toFixed(decimals) + post;
+
+      whenSeen(el, function () {
+        var start = null;
+        var duration = 1600;
+
+        function frame(now) {
+          if (start === null) start = now;
+
+          var p = Math.min((now - start) / duration, 1);
+          // Ease-out quart: most of the distance early, a long settle.
+          var eased = 1 - Math.pow(1 - p, 4);
+
+          el.textContent = pre + (target * eased).toFixed(decimals) + post;
+          if (p < 1) requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+      }, 0.4);
+    });
+  }
+
+  /* ---------------- magnetic buttons ----------------
+     The offset goes into custom properties rather than straight into
+     `transform`, so the hover lift in the stylesheet can compose with it. */
+
+  function initMagnetic() {
+    if (REDUCED) return;
+
+    // Deliberately not the back-to-top button: its transform is written
+    // inline by applyTopBtn, which would win over the class rule anyway.
+    document.querySelectorAll('.vka-btn-primary, .vka-btn-ghost, .vka-btn-send').forEach(function (el) {
+      el.classList.add('vka-mag');
+
+      el.addEventListener('mousemove', function (e) {
+        if (window.innerWidth < MOBILE) return;
+
+        var r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', ((e.clientX - (r.left + r.width / 2)) * 0.22).toFixed(1) + 'px');
+        el.style.setProperty('--my', ((e.clientY - (r.top + r.height / 2)) * 0.3).toFixed(1) + 'px');
+      });
+
+      el.addEventListener('mouseleave', function () {
+        el.style.setProperty('--mx', '0px');
+        el.style.setProperty('--my', '0px');
+      });
+    });
+  }
+
+  /* ---------------- card tilt ---------------- */
+
+  function initTilt() {
+    if (REDUCED) return;
+
+    document.querySelectorAll('[data-tilt]').forEach(function (el) {
+      el.classList.add('vka-tilt');
+      var max = parseFloat(el.getAttribute('data-tilt')) || 6;
+
+      el.addEventListener('mousemove', function (e) {
+        if (window.innerWidth < MOBILE) return;
+
+        var r = el.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width;
+        var py = (e.clientY - r.top) / r.height;
+
+        el.classList.add('is-tilting');
+        el.style.setProperty('--px', (px * 100).toFixed(1) + '%');
+        el.style.setProperty('--py', (py * 100).toFixed(1) + '%');
+        el.style.transform =
+          'perspective(1000px) rotateX(' + ((0.5 - py) * max).toFixed(2) + 'deg)' +
+          ' rotateY(' + ((px - 0.5) * max).toFixed(2) + 'deg) translateY(-6px)';
+      });
+
+      el.addEventListener('mouseleave', function () {
+        el.classList.remove('is-tilting');
+        // 'none', not '': these cards also carry data-reveal, and clearing the
+        // property outright would hand them back to the rule that parks an
+        // unrevealed element 26px down the page.
+        el.style.transform = 'none';
+      });
+    });
+  }
+
+  /* ---------------- nav scroll spy ----------------
+     One bar slides between the links rather than each link owning its own
+     underline, so moving between sections reads as a single continuous
+     movement. */
+
+  function initNavSpy() {
+    var wrap = document.getElementById('vka-navlinks');
+    if (!wrap) return;
+
+    var links = Array.prototype.slice.call(wrap.querySelectorAll('[data-navlink]'));
+    if (!links.length) return;
+
+    var sections = links.map(function (a) {
+      return document.querySelector(a.getAttribute('href'));
+    });
+
+    var indicator = document.createElement('span');
+    indicator.id = 'vka-nav-ind';
+    wrap.appendChild(indicator);
+
+    var active = -1;
+
+    function place() {
+      var a = links[active];
+      if (!a) { indicator.style.opacity = '0'; return; }
+
+      indicator.style.opacity = '1';
+      indicator.style.width = a.offsetWidth + 'px';
+      indicator.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+    }
+
+    function select(i) {
+      if (i === active) return;
+      active = i;
+
+      links.forEach(function (a, n) {
+        a.style.color = n === i ? '#123C2D' : '#5E6862';
+        a.style.fontWeight = n === i ? '700' : '500';
+      });
+
+      place();
+    }
+
+    // The section counts as current once its top has passed a line a third of
+    // the way down the viewport — near enough to the reading position that the
+    // indicator changes when the heading does.
+    function spy() {
+      var line = window.scrollY + window.innerHeight * 0.32;
+      var found = 0;
+
+      sections.forEach(function (section, i) {
+        if (section && section.offsetTop <= line) found = i;
+      });
+
+      select(found);
+    }
+
+    spy();
+    window.addEventListener('scroll', spy, { passive: true });
+    // The links reflow with the viewport, so the bar has to be re-measured.
+    window.addEventListener('resize', place);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+  }
+
+  /* ---------------- scroll progress ---------------- */
+
+  function initProgress() {
+    if (REDUCED) return function () {};
+
+    var bar = document.createElement('div');
+    bar.id = 'vka-progress';
+    document.body.appendChild(bar);
+
+    return function () {
+      var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      var p = scrollable > 0 ? window.scrollY / scrollable : 0;
+      bar.style.transform = 'scaleX(' + Math.min(Math.max(p, 0), 1).toFixed(4) + ')';
+    };
   }
 
   /* ---------------- progressive lists ("view more") ----------------
@@ -132,7 +478,7 @@
   function initParallax() {
     var nodes = document.querySelectorAll('[data-parallax]');
     if (!nodes.length) return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (REDUCED) return;
 
     var raf = null, px = 0, py = 0;
 
@@ -381,26 +727,40 @@
   /* ---------------- boot ---------------- */
 
   ready(function () {
+    // Before initReveals: a heading that splits is one the reveal observer
+    // must not also fade in as a block.
+    initSplit();
+
     initReveals();
+    initCounters();
     initParallax();
+    initMagnetic();
+    initTilt();
     initSlides();
     initVideo();
     initGallery();
     initDrawer();
     initMore();
+    initNavSpy();
     applyNav();
     applyTopBtn();
     applyResponsive();
 
+    var applyProgress = initProgress();
+    applyProgress();
+
     var top = document.getElementById('vka-top');
     if (top) top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-    window.addEventListener('scroll', function () { applyNav(); applyTopBtn(); }, { passive: true });
+    window.addEventListener('scroll', function () { applyNav(); applyTopBtn(); applyProgress(); }, { passive: true });
     window.addEventListener('resize', applyResponsive);
 
-    // Re-measure once fonts and images have settled.
-    setTimeout(applyResponsive, 350);
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(applyResponsive);
-    window.addEventListener('load', applyResponsive);
+    // Re-measure once fonts and images have settled. The reveal sweep rides
+    // along: these are exactly the moments the layout it measured has moved.
+    function settle() { applyResponsive(); sweepReveals(); }
+
+    setTimeout(settle, 350);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
+    window.addEventListener('load', settle);
   });
 })();
