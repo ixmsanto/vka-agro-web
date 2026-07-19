@@ -10,7 +10,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    {{-- Fraunces for display, Inter for everything else. Both are variable and
+         carry an optical-size axis, so the same file is drawn for a 76px
+         headline and a 12px label rather than one compromise between them. --}}
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:ital,opsz,wght@0,14..32,400..700;1,14..32,400..700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('css/site.css') }}?v={{ $assetVersion }}">
     @stack('head')
