@@ -238,10 +238,19 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
   [data-hero-seal] { top: 20px; right: -16px; }
 }
 
-@media (max-width: 859px) {
-  [data-hero-spec] { top: 20%; left: 10px; }
-  [data-hero-stats] { right: 10px; bottom: 64px; }
-  [data-hero-seal] { top: 12px; right: -10px; }
+/* Once the row stacks (the design's own mobile boundary, width < 1080) the
+   picture is centred and full-width, so the two glass cards that hang off its
+   sides on desktop have nowhere to go but on top of the product — which is what
+   buried it on a phone. Rather than lose that information, the stage becomes a
+   column: the cards leave their absolute pins and flow as full-width panels
+   directly beneath the picture, still legible and no longer covering it. The
+   seal stays pinned, tucked fully inside the frame's top corner so nothing
+   spills into the page beside it. */
+@media (max-width: 1079px) {
+  [data-hero-stagewrap] { display: flex; flex-direction: column; align-items: stretch; gap: 14px; }
+  [data-hero-spec], [data-hero-stats] { position: static; width: auto; max-width: none; }
+  [data-hero-seal] { top: 10px; right: 10px; }
+  [data-hero-seal] svg { width: 90px; height: 90px; }
 }
 
 /* ---- Responsive visibility. The design drove these from JS state:

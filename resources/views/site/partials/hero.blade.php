@@ -69,7 +69,15 @@
 
                  At 1080/1350 the height is 1.25x the width, so this cap is also
                  what sets the hero's height: 660px wide would mean 825px tall. --}}
-            <div style="position:relative;width:100%;max-width:545px;aspect-ratio:1080 / 1350;z-index:2">
+            <div data-hero-stagewrap style="position:relative;width:100%;max-width:545px;z-index:2">
+
+                {{-- Just the picture and its slide dots: a fixed-ratio box the
+                     frame fills. The seal and the two glass cards below are
+                     siblings of this box rather than children, so once the row
+                     stacks they can drop into normal flow beneath the picture
+                     without stretching it — while on desktop they still float
+                     back over its edges (positions in site.css). --}}
+                <div data-hero-stage style="position:relative;width:100%;aspect-ratio:1080 / 1350">
 
                 {{-- The rounded frame is on the floating layer, not on this one:
                      the drop-shadow needs to read the rounded alpha, and clipping
@@ -92,6 +100,7 @@
                         <button type="button" data-dot="{{ $i }}" aria-label="Slide {{ $i + 1 }}" style="width:{{ $i === 0 ? 26 : 9 }}px;height:9px;padding:0;border:none;border-radius:999px;background:{{ $i === 0 ? '#2F8B3C' : 'rgba(33,80,60,0.25)' }};cursor:pointer;transition:width .4s ease, background .4s ease"></button>
                     @endforeach
                 </div>
+                </div>{{-- /data-hero-stage --}}
 
                 {{-- Rotating organic seal, straddling the frame's top-right
                      corner. The negative offset is measured from the picture, so
