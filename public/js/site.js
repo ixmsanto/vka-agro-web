@@ -716,6 +716,211 @@
     });
   }
 
+  /* ---------------- gallery lightbox ----------------
+     Clicking a tile opens its full picture over a blurred backdrop, with
+     keyboard, swipe and prev/next navigation across every gallery image. The
+     overlay is built once, lazily, the first time a tile is opened. Tiles that
+     hold only a placeholder slot have nothing to enlarge and stay inert. */
+
+  function initLightbox() {
+    // Built from every tile that carries a real <img>. The list is fixed at
+    // load: "view more" tiles are already in the markup (just hidden), so their
+    // index is valid the moment they appear, and masonry only moves the tile
+    // nodes between columns — it never drops the click handlers bound here.
+    var items = [];
+
+    document.querySelectorAll('[data-gtile]').forEach(function (tile) {
+      var img = tile.querySelector('img');
+      if (!img) return;
+
+      var capEl = tile.querySelector('[data-gcap]');
+      var caption = capEl ? capEl.textContent.trim() : '';
+      var index = items.length;
+      items.push({ src: img.getAttribute('src'), caption: caption });
+
+      tile.style.cursor = 'zoom-in';
+      tile.setAttribute('role', 'button');
+      tile.setAttribute('tabindex', '0');
+      tile.setAttribute('aria-label', 'View ' + (caption || 'photo') + ' full size');
+
+      tile.addEventListener('click', function () { open(index); });
+      tile.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(index); }
+      });
+    });
+
+    if (!items.length) return;
+
+    var lb, imgEl, capText, countEl;
+    var current = 0;
+    var lastFocused = null;
+    var loadSeq = 0;
+
+    function svgIcon(d) {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+    }
+
+    function build() {
+      lb = document.createElement('div');
+      lb.className = 'vka-lb';
+      lb.id = 'vka-lb';
+      lb.setAttribute('role', 'dialog');
+      lb.setAttribute('aria-modal', 'true');
+      lb.setAttribute('aria-hidden', 'true');
+      lb.setAttribute('aria-label', 'Gallery image viewer');
+
+      lb.innerHTML =
+        '<div class="vka-lb-backdrop" data-lb-close></div>' +
+        '<button type="button" class="vka-lb-btn vka-lb-close" data-lb-close aria-label="Close">' +
+          svgIcon('M6 6l12 12M18 6L6 18') + '</button>' +
+        '<button type="button" class="vka-lb-btn vka-lb-arrow vka-lb-prev" aria-label="Previous image">' +
+          svgIcon('M15 6l-6 6 6 6') + '</button>' +
+        '<button type="button" class="vka-lb-btn vka-lb-arrow vka-lb-next" aria-label="Next image">' +
+          svgIcon('M9 6l6 6-6 6') + '</button>' +
+        '<figure class="vka-lb-stage">' +
+          '<span class="vka-lb-spin" aria-hidden="true"></span>' +
+          '<img class="vka-lb-img" alt="">' +
+          '<figcaption class="vka-lb-bar">' +
+            '<span class="vka-lb-cap" data-lb-cap></span>' +
+            '<span class="vka-lb-count" data-lb-count></span>' +
+          '</figcaption>' +
+        '</figure>';
+
+      document.body.appendChild(lb);
+
+      imgEl = lb.querySelector('.vka-lb-img');
+      capText = lb.querySelector('[data-lb-cap]');
+      countEl = lb.querySelector('[data-lb-count]');
+
+      // A single-image gallery has nowhere to page to.
+      if (items.length < 2) {
+        lb.querySelector('.vka-lb-prev').style.display = 'none';
+        lb.querySelector('.vka-lb-next').style.display = 'none';
+        countEl.style.display = 'none';
+      }
+
+      // Anything carrying data-lb-close (the backdrop, the close button) shuts
+      // it; the stage lets clicks in its margins fall through to the backdrop.
+      lb.addEventListener('click', function (e) {
+        var hit = e.target.closest('[data-lb-close]');
+        if (hit) close();
+      });
+      lb.querySelector('.vka-lb-prev').addEventListener('click', function () { go(-1); });
+      lb.querySelector('.vka-lb-next').addEventListener('click', function () { go(1); });
+
+      // Horizontal swipe pages through the set; a mostly-vertical drag is left
+      // alone so a scroll gesture is not read as a page turn.
+      var sx = 0, sy = 0, tracking = false;
+      var stage = lb.querySelector('.vka-lb-stage');
+      stage.addEventListener('touchstart', function (e) {
+        tracking = e.touches.length === 1;
+        if (tracking) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
+      }, { passive: true });
+      stage.addEventListener('touchend', function (e) {
+        if (!tracking) return;
+        tracking = false;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - sx, dy = t.clientY - sy;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+      }, { passive: true });
+    }
+
+    function preload(i) {
+      var item = items[(i + items.length) % items.length];
+      if (item) { var im = new Image(); im.src = item.src; }
+    }
+
+    function show(i) {
+      current = (i + items.length) % items.length;
+      var item = items[current];
+      // Each swap takes a ticket; a slow-loading image that resolves after the
+      // visitor has already paged on is discarded instead of flashing in late.
+      var seq = ++loadSeq;
+
+      imgEl.classList.remove('is-loaded');
+      lb.classList.add('is-loading');
+
+      var pre = new Image();
+      function ready() {
+        if (seq !== loadSeq) return;
+        imgEl.src = item.src;
+        imgEl.alt = item.caption || 'Gallery image';
+        lb.classList.remove('is-loading');
+        requestAnimationFrame(function () {
+          if (seq === loadSeq) imgEl.classList.add('is-loaded');
+        });
+        preload(current + 1);
+        preload(current - 1);
+      }
+      pre.onload = ready;
+      pre.onerror = ready;
+      pre.src = item.src;
+      if (pre.complete) ready();
+
+      capText.textContent = item.caption || '';
+      capText.style.display = item.caption ? '' : 'none';
+      countEl.textContent = (current + 1) + ' / ' + items.length;
+    }
+
+    function go(dir) { if (items.length > 1) show(current + dir); }
+
+    function onKey(e) {
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') go(-1);
+      else if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'Tab') trap(e);
+    }
+
+    // Keeps Tab inside the dialog while it is open, so focus cannot wander back
+    // to the page underneath the backdrop.
+    function trap(e) {
+      var f = Array.prototype.slice.call(lb.querySelectorAll('button'))
+        .filter(function (b) { return b.style.display !== 'none'; });
+      if (!f.length) return;
+
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    function open(i) {
+      if (!lb) build();
+      lastFocused = document.activeElement;
+
+      // Lock the page behind the overlay, padding out the width the vanished
+      // scrollbar leaves so the content underneath does not jump sideways.
+      var pad = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = 'hidden';
+      if (pad > 0) document.body.style.paddingRight = pad + 'px';
+
+      show(i);
+      lb.setAttribute('aria-hidden', 'false');
+      document.addEventListener('keydown', onKey);
+
+      // Two frames: the element has to land in its hidden pose before the class
+      // that transitions it away from that pose is added, or there is no
+      // transition to run.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          lb.classList.add('is-open');
+          var focusBtn = lb.querySelector('.vka-lb-close');
+          if (focusBtn) focusBtn.focus();
+        });
+      });
+    }
+
+    function close() {
+      if (!lb) return;
+      lb.classList.remove('is-open');
+      lb.setAttribute('aria-hidden', 'true');
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+  }
+
   /* ---------------- masonry gallery ----------------
      The columns are built here rather than with CSS multi-column, which
      balances for the shortest total height and so leaves the last column
@@ -856,6 +1061,7 @@
     initSlides();
     initVideo();
     initGallery();
+    initLightbox();
     initDrawer();
     initMore();
     initNavSpy();
