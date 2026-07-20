@@ -541,6 +541,155 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 [data-gscrim] { transition: opacity .5s ease; }
 [data-gtile]:hover [data-gscrim] { opacity: 0.75; }
 
+/* ---- Gallery lightbox. Built by site.js when a tile is opened: the full
+   picture floats on a blurred backdrop with prev/next, keyboard and swipe.
+   Sits above the scroll progress bar (z 120) so nothing shows through. ---- */
+.vka-lb {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(14px, 3.5vw, 44px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .38s ease, visibility .38s ease;
+}
+.vka-lb.is-open { opacity: 1; visibility: visible; }
+
+.vka-lb-backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(125% 125% at 50% 28%, rgba(18,44,33,0.72), rgba(6,18,13,0.92));
+  -webkit-backdrop-filter: blur(16px) saturate(115%);
+  backdrop-filter: blur(16px) saturate(115%);
+  cursor: zoom-out;
+}
+
+/* pointer-events:none lets clicks in the stage's margins fall through to the
+   backdrop and close; the picture and caption switch them back on so those do
+   not dismiss it. */
+.vka-lb-stage {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  max-width: min(1120px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
+}
+.vka-lb.is-open .vka-lb-stage { opacity: 1; transform: scale(1); }
+
+.vka-lb-img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 150px);
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.55);
+  background: rgba(255,255,255,0.05);
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity .5s ease, transform .6s cubic-bezier(.16,1,.3,1);
+  pointer-events: auto;
+}
+.vka-lb-img.is-loaded { opacity: 1; transform: none; }
+
+.vka-lb-spin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid rgba(255,255,255,0.22);
+  border-top-color: #63BE46;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: vkaSpin 0.8s linear infinite;
+  transition: opacity .2s ease;
+}
+.vka-lb.is-loading .vka-lb-spin { opacity: 1; }
+
+.vka-lb-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  padding: 0 4px;
+  color: rgba(255,255,255,0.92);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  pointer-events: auto;
+}
+.vka-lb-cap {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vka-lb-count {
+  flex: 0 0 auto;
+  padding-left: 14px;
+  border-left: 1px solid rgba(255,255,255,0.22);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+.vka-lb-btn {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: background .25s ease, transform .25s ease, border-color .25s ease;
+}
+.vka-lb-btn svg { width: 22px; height: 22px; }
+.vka-lb-btn:hover { background: rgba(99,190,70,0.9); border-color: transparent; }
+.vka-lb-btn:active { transform: scale(0.9); }
+.vka-lb-btn:focus-visible { outline: 2px solid #63BE46; outline-offset: 3px; }
+
+.vka-lb-close {
+  top: clamp(14px, 3vw, 28px);
+  right: clamp(14px, 3vw, 28px);
+  width: 46px;
+  height: 46px;
+}
+.vka-lb-arrow {
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  transform: translateY(-50%);
+}
+.vka-lb-arrow:active { transform: translateY(-50%) scale(0.9); }
+.vka-lb-prev { left: clamp(10px, 2.5vw, 32px); }
+.vka-lb-next { right: clamp(10px, 2.5vw, 32px); }
+
+@media (max-width: 619px) {
+  .vka-lb-arrow { width: 44px; height: 44px; }
+  .vka-lb-btn svg { width: 20px; height: 20px; }
+  .vka-lb-img { max-height: calc(100vh - 128px); }
+}
+
 /* ---- Video: a ring breathing out from the play button. ---- */
 .vka-play::after {
   content: '';
@@ -617,4 +766,9 @@ input::placeholder, textarea::placeholder { color: rgba(33,80,60,0.5); }
 
   .vka-tilt::after { display: none; }
   #vka-progress { display: none; }
+
+  /* The lightbox still opens and pages — it just does so without the zoom and
+     crossfade, and its spinner stops spinning. */
+  .vka-lb-stage, .vka-lb-img { transform: none !important; }
+  .vka-lb-spin { animation: none; }
 }
